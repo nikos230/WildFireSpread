@@ -5,14 +5,25 @@ from utils.dataset import NetCDFDataset
 import torch.optim as optim
 import torch.nn as nn
 import glob
+import sys
+import os
 
 BATCH_SIZE = 4
 LEARNING_RATE = 0.001
 EPOCHS = 1
-TRAIN_FILE_PATH =''
+TRAIN_FILE_PATH = 'WildFireSpread/dataset_small'
+
+def get_nc_files(directory):
+    nc_file_paths = []
+    with os.scandir(directory) as entries:
+        for entry in entries:
+            if entry.is_file() and entry.name.endswith('.nc'):
+                nc_file_paths.append(entry.path)
+    return nc_file_paths
 
 
-all_files = glob.glob(TRAIN_FILE_PATH)
+
+all_files = get_nc_files(TRAIN_FILE_PATH)
 
 train_dataset = NetCDFDataset(all_files, split='train')
 validation_dataset = NetCDFDataset(all_files, split='validation')
@@ -20,8 +31,14 @@ validation_dataset = NetCDFDataset(all_files, split='validation')
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 validation_loader = DataLoader(validation_dataset, batch_size=BATCH_SIZE, shuffle=False)
 
-in_channels = len(train_dataset.input_vars) + len(train_dataset.static_vars)  
-model = UNet(in_channels=in_channels*5, out_channels=1)
+# Ensure you know the correct number of input and static variables
+input_vars_count = len(train_dataset.input_vars)
+static_vars_count = len(train_dataset.static_vars)
+print(f"Input Variables Count: {input_vars_count}, Static Variables Count: {static_vars_count}")
+
+# Ensure the input channels calculation reflects the correct count
+in_channels = input_vars_count + static_vars_count  
+model = UNet(in_channels=in_channels * 4, out_channels=1)
 
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'

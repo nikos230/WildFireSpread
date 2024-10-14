@@ -6,6 +6,8 @@ import glob
 import numpy as np
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, jaccard_score
 import matplotlib.pyplot as plt
+import sys
+import os
 
 def compute_metrics(y_true, y_pred):
     y_true_flat = y_true.flatten()
@@ -32,8 +34,15 @@ model.load_state_dict(torch.load('saved_models/unet_model_test.pth'))
 model.to(device)
 
 # load test dataset
-TEST_FILES_PATH = ''
-test_files = glob.glob(TEST_FILES_PATH)
+TEST_FILES_PATH = 'WildFireSpread/dataset_small'
+def get_nc_files(directory):
+    nc_file_paths = []
+    with os.scandir(directory) as entries:
+        for entry in entries:
+            if entry.is_file() and entry.name.endswith('.nc'):
+                nc_file_paths.append(entry.path)
+    return nc_file_paths
+test_files = get_nc_files(TEST_FILES_PATH)
 test_dataset = NetCDFDataset(test_files, split='test')
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
