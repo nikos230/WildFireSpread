@@ -4,7 +4,7 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, Subset
 from sklearn.model_selection import train_test_split
 from utils.dataset import BurnedAreaDataset
-from utils.model import UNet3D
+from unet.model import UNet3D
 from utils.utils import dice_coefficient
 import glob
 import os
@@ -65,22 +65,22 @@ def train():
             inputs = inputs.to(device)
             labels = labels.to(device)
             labels = labels.unsqueeze(1) # add a dimention 
-            print('Label size after unsqueeze:', labels.shape)
-            print('Input size:', inputs.size)
+            #print('Label size after unsqueeze:', labels.shape)
+            #print('Input size:', inputs.size)
 
             optimizer.zero_grad()
-            ouputs = model(inputs)
+            outputs = model(inputs)
 
-            loss = criterion(ouputs, labels)
+            loss = criterion(outputs, labels)
             loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
             optimizer.step()
 
             epoch_loss += loss.item()
-            epoch_dice += dice_coefficient(outputs, labels).items()
+            epoch_dice += dice_coefficient(outputs, labels).item()
 
         avg_loss = epoch_loss / len(train_loader)
-        avg_loss = epoch_dice / len(train_loader)
+        avg_dice = epoch_dice / len(train_loader)
         print(f'Epoch [{epoch}/{num_epochs}], Loss: {avg_loss:.4f}, Dice Coefficient: {avg_dice:.4f}')
 
         # save model chackpoint
@@ -94,35 +94,19 @@ def train():
         with torch.no_grad():
             for inputs, labels in validation_loader:
                 inputs = inputs.to(device)
-                
+                labels = labels.to(device)
+                labels = labels.unsqueeze(1)
 
+                outputs = model(inputs)
+                loss = criterion(outputs, labels)
 
+                validation_loss += loss.item()
+                validation_dice += dice_coefficient(outputs, labels).item()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        avg_validation_loss = validation_loss / len(validation_loader)
+        avg_validation_dice = validation_dice / len(validation_loader)
+        print(f'Validation Loss: {avg_validation_loss:.4f}, Validation Dice Coefficient: {avg_validation_dice:.4f}')
+        
 
 if __name__ == '__main__':
     train()
