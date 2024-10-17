@@ -1,97 +1,88 @@
-import os
-import numpy as np
 import torch
 from torch.utils.data import Dataset
-from netCDF4 import Dataset as NetCDF4Dataset  # Import the correct Dataset class
+import xarray as xr
+import numpy as np
+import glob
 
-class NetCDFDataset(Dataset):
-    def __init__(self, file_list, split='train', transform=None):
-        """
-        Args:
-            file_list (list): List of .nc file paths.
-            split (str): Specify 'train', 'validation', or 'test' to set the dataset split.
-            transform (callable, optional): Optional transform to be applied on a sample.
-        """
-        self.file_list = file_list
-        self.split = split
-        self.transform = transform
+class BurnedAreaDataset(Dataset):
+    def __init__(self, nc_files, transform=None):
+        self.nc_files = nc_files   # .nc samples files
+        self.transform = transform # 
+        self.data = []             #
+        self.load_data()           # load data from sample files
 
-        # Define input and static variables
-        self.input_vars = [
-            'aspect', 'curvature', 'd2m', 'dem', 'lai',
-            'lst_day', 'lst_night', 'ndvi', 'rh', 'slope',
-            'smi', 'sp', 'ssrd', 't2m', 'tp',
-            'wind_direction', 'wind_speed', 'population'
-        ]
-        self.static_vars = [
-            'lc_agriculture', 'lc_forest', 'lc_grassland', 
-            'lc_settlement', 'lc_shrubland', 'lc_sparse_vegetation', 
-            'lc_water_bodies', 'lc_wetland', 'roads_distance'
-        ]
+    def load_data(self):
+        for file in self.nc_files:
+            sample = xr.open_dataset(file)
 
-        # Split logic
-        total_files = len(self.file_list)
-        if self.split == 'train':
-            self.file_list = self.file_list[:int(total_files * 0.7)]
-        elif self.split == 'validation':
-            self.file_list = self.file_list[int(total_files * 0.7):int(total_files * 0.85)]
-        elif self.split == 'test':
-            self.file_list = self.file_list[int(total_files * 0.85):]
-        else:
-            raise ValueError("Invalid split type. Choose 'train', 'validation', or 'test'.")
+            dynamic_vars = [
+                'd2m', 'ignition_points', 'lai', 'lst_day', 'lst_night',
+                'ndvi', 'rh', 'smi', 'sp', 'ssrd', 't2m', 'tp',
+                'wind_direction', 'wind_speed'
+            ]
+
+            static_vars = [
+                'aspect', 'curvature', 'dem', 'roads_distance', 'slope',
+                'lc_agriculture', 'lc_forest', 'lc_grassland', 'lc_settlement',
+                'lc_shrubland', 'lc_sparse_vegetation', 'lc_water_bodies',
+                'lc_wetland', 'population'
+            ]
+
+            time_steps = sample['time'].size # number of time steps in sample
+
+            inputs = [] # list to put dynamic and static variables from sample
+            # get dynamic variables from sample .nc file
+            for variable in dynamic_vars:
+                data_array = sample[variable].values
+                inputs.append(data_array)
+
+            # get static variables from sample .nc file
+            for variable in static_vars:
+                data_array = sample[variable].values
+                data_array = np.repeat(data_array[np.newaxis, :, :], time_steps, axis=0)
+                inputs.append(data_array)
+
+            # put all varibles into a tensor
+            input_tensor = np.stack(inputs, axis=0)    
+            
+            # normazise data, each channel individually
+            for channel in range(input_tensor.shape[0]):
+                channel_data = input_tensor[channel]
+                data_min = np.nanmin(channel_data)
+                data_max = np.nanmax(channel_data)
+                if data_max - data_min > 0:
+                    input_tensor[channel] = (channel_data - data_min) / (data_max - data_min)
+                else:
+                    # same values all over the channel
+                    input_tensor[channel] = np.zeros_like(channel_data)    
+
+            # check for nan's and inf in input_tensor
+            if np.isnan(input_tensor).any() or np.isinf(input_tensor).any():
+                print('found value that is nan or inf!')
+                continue
+
+            # label varible
+            label = sample['burned_areas'].values[0] # get label for time=0 (first fire day)
+            label = (label > 0).astype(np.float32) # make is binary
+
+            if np.isnan(label).any() or np.isinf(label).any():
+                print('found nan or inf value on label!')
+                continue
+            
+            self.data.append((input_tensor, label))
+            sample.close()
+
 
     def __len__(self):
-        return len(self.file_list)
+        return len(self.data)
 
     def __getitem__(self, idx):
-        # Load the .nc file
-        file_path = self.file_list[idx]
-        nc_file = NetCDF4Dataset(file_path)
+        input_tensor, label = self.data[idx]
 
-        features = []
-
-
-        # Load static variables (2D)
-        for var in self.static_vars:
-            data = nc_file.variables[var][:]
-            if data.ndim != 2:
-                raise ValueError(f"Static Variable '{var}' does not have the expected shape: {data.shape}")
-            
-            # Expand dimension to add time steps (4 in your case)
-            data = np.tile(data[np.newaxis, ...], (4, 1, 1))  # Shape becomes (4, 64, 64)
-            features.append(data)
-
-        # Load dynamic variables (3D)
-        for var in self.input_vars:
-            data = nc_file.variables[var][:]
-            print(f"Variable '{var}' has shape {data.shape} and dtype {data.dtype}")  # Debugging output
-        
-            if data.ndim == 3:
-                features.append(data)
-            elif data.ndim == 2:
-                data = np.expand_dims(data, axis=0)  # (1, 64, 64)
-                data = np.tile(data, (4, 1, 1))  # Now shape is (4, 64, 64)
-                features.append(data)
-            else:
-                raise ValueError(f"Variable '{var}' does not have the expected shape: {data.shape}")
-
-        # Check shapes of features
-        for i, feature in enumerate(features):
-            print(f"Feature {i} shape: {feature.shape}")
-
-        # Concatenate features
-        features_tensor = torch.from_numpy(np.concatenate(features, axis=0)).float()
-        
-        # Load target variable (assuming it also has the time dimension)
-        target = nc_file.variables['burned_areas'][:]
-        target_tensor = torch.from_numpy(target).float()
-
-        # Optional transform
+        input_tensor = torch.tensor(input_tensor, dtype=torch.float32)
+        label = torch.tensor(label, dtype=torch.float32)
         if self.transform:
-            features_tensor = self.transform(features_tensor)
-            target_tensor = self.transform(target_tensor)
-
-        return features_tensor, target_tensor
-
-
+            input_tensor = self.transform(input_tensor)
+            label = self.transform(label)
+        return input_tensor, label    
 
