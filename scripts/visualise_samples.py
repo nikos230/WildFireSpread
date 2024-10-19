@@ -4,7 +4,7 @@ import xarray as xr
 import matplotlib.pyplot as plt
 
 output  = 'WildFireSpread/WildFireSpread_UNET/output_plots'
-sample  = 'WildFireSpread/dataset_mesegeos/2021/sample_4.nc'
+sample  = 'WildFireSpread/dataset_mesogeos_new/2021/sample_0.nc'
 
 ds =  xr.open_dataset(sample)
 

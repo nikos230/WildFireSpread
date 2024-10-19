@@ -1,0 +1,8 @@
+dataset_path:       'WildFireSpread/dataset_mesogeos_corrected/2021'
+train_dataset_path: 'WildFireSpread/train_dataset'
+test_dataset_path:  'WildFireSpread/test_dataset'
+
+numbner_of_samples: '100'
+
+train_split:        '0.8'
+test_split:         '0.2'

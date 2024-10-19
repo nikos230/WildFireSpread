@@ -1,9 +1,7 @@
-# test.py
-
 import torch
 from torch.utils.data import DataLoader
 from utils.dataset import BurnedAreaDataset
-from unet.model import UNet3D
+from unet.model_new import UNet3D
 from utils.utils import dice_coefficient
 import glob
 import os
@@ -12,8 +10,8 @@ import numpy as np
 
 def test():
     # Paths
-    test_data_path = 'WildFireSpread/datatset_small_corrected_test/*.nc'  # Update with your test data path
-    checkpoint_path = 'checkpoints/model_epoch_20.pth'  # Update with your checkpoint path
+    test_data_path = 'WildFireSpread/dataset_test/*.nc'  # Update with your test data path
+    checkpoint_path = 'WildFireSpread/WildFireSpread_UNET/checkpoints/model_epoch20.pth'  # Update with your checkpoint path
 
     # Dataset and DataLoader
     nc_files = glob.glob(test_data_path)
@@ -23,13 +21,24 @@ def test():
     # Model
     in_channels = dataset[0][0].shape[0]
     out_channels = 1
-    model = UNet3D(in_channels, out_channels)
+    model = UNet3D(
+        in_channels=in_channels,
+        out_channels=out_channels,
+        num_filters=[64, 128, 256],  # Modify as necessary based on your model
+        kernel_size=3,
+        pool_size=(1, 2, 2),
+        use_batchnorm=True,
+        final_activation=None
+    )
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.load_state_dict(torch.load(checkpoint_path, map_location=device))
     model.to(device)
     model.eval()
 
     total_dice = 0
+    all_predictions = []
+    all_ground_truths = []
+
     with torch.no_grad():
         for idx, (inputs, targets) in enumerate(dataloader):
             inputs = inputs.to(device)
@@ -48,36 +57,43 @@ def test():
             # Optional: Threshold the predictions to get binary masks
             binary_preds = (preds > 0.3).astype(np.uint8)
 
-            # Visualization
-            plt.figure(figsize=(15, 5))
-
-            plt.subplot(1, 3, 1)
-            plt.imshow(preds, cmap='hot', interpolation='nearest')
-            plt.title('Predicted Burned Area Probabilities')
-            plt.colorbar()
-
-            plt.subplot(1, 3, 2)
-            plt.imshow(binary_preds, cmap='gray', interpolation='nearest')
-            plt.title('Predicted Burned Area (Binary Mask)')
-
-            plt.subplot(1, 3, 3)
-            plt.imshow(targets, cmap='gray', interpolation='nearest')
-            plt.title('Ground Truth Burned Area')
-
-            plt.suptitle(f'Sample {idx+1} - Dice Coefficient: {dice:.4f}', fontsize=16)
-            plt.tight_layout()
-
-            # Save the figure to a file
-            output_path = os.path.join('WildFireSpread/WildFireSpread_UNET/output_plots', f'sample_{idx+1}.png')
-            plt.savefig(output_path)
-            plt.close()  # Close the figure to free up memory
+            # Collect predictions and ground truths for visualization
+            all_predictions.append(binary_preds)
+            all_ground_truths.append(targets)
 
             # Optional: Print progress
-            print(f'Saved visualization for sample {idx+1}')
+            print(f'Processed sample {idx+1} - Dice Coefficient: {dice:.4f}')
 
     avg_dice = total_dice / len(dataloader)
     print(f'Average Dice Coefficient on Test Set: {avg_dice:.4f}')
 
+    # Plot all predictions and ground truths
+    num_samples = len(all_predictions)
+    n_cols = 2  # 1 for prediction, 1 for ground truth
+    n_rows = num_samples
+
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(10, 5 * num_samples))
+
+    for i in range(num_samples):
+        # Predicted mask
+        axes[i, 0].imshow(all_predictions[i], cmap='gray', interpolation='nearest')
+        axes[i, 0].set_title(f'Sample {i+1} - Predicted Mask')
+
+        # Ground Truth mask
+        axes[i, 1].imshow(all_ground_truths[i], cmap='gray', interpolation='nearest')
+        axes[i, 1].set_title(f'Sample {i+1} - Ground Truth Mask')
+
+        for ax in axes[i]:
+            ax.axis('off')  # Hide axis
+
+    plt.tight_layout()
+
+    # Save the figure with all results
+    output_path = 'WildFireSpread/WildFireSpread_UNET/output_plots/test_results.png'
+    plt.savefig(output_path)
+    plt.close()  # Close the figure to free up memory
+
+    print(f'Saved visualization of test samples to {output_path}')
 
 
 if __name__ == '__main__':

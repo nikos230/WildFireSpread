@@ -1,110 +1,137 @@
-# train.py
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader, Subset
 from sklearn.model_selection import train_test_split
 from utils.dataset import BurnedAreaDataset
-from unet.model import UNet3D
+from unet.model_new import UNet3D
 from utils.utils import dice_coefficient
 import glob
 import os
 import numpy as np
+import yaml
 
-def split_dataset(dataset, val_size=0.2, test_size=0.1):
+def split_dataset(dataset, validation_size=0.2, test_size=0.1):
     indices = list(range(len(dataset)))
-    train_val_indices, test_indices = train_test_split(indices, test_size=test_size, random_state=42)
-    train_indices, val_indices = train_test_split(train_val_indices, test_size=val_size, random_state=42)
-    
-    train_set = Subset(dataset, train_indices)
-    val_set = Subset(dataset, val_indices)
-    test_set = Subset(dataset, test_indices)
-    
-    return train_set, val_set, test_set
+    train_validation_indices, test_indices = train_test_split(indices, test_size=test_size, random_state=42)
+    train_indices, validation_indices = train_test_split(train_validation_indices, test_size=validation_size, random_state=42)
 
-def train():
-    # Hyperparameters
+    train_set = Subset(dataset, train_indices)
+    validation_set = Subset(dataset, validation_indices)
+    test_set = Subset(dataset, test_indices)
+
+    return train_set, validation_set, test_set
+
+
+def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_batchnorm, final_activation):
     num_epochs = 20
     batch_size = 2
-    learning_rate = 1e-4
+    learing_rate = 1e-4
 
-    # Paths
-    data_path = 'WildFireSpread/dataset_small_corrected/*.nc'  # Update with your data path
+    # paths for data
+    data_path = 'WildFireSpread/dataset_small/*.nc'
     checkpoint_dir = 'WildFireSpread/WildFireSpread_UNET/checkpoints'
     os.makedirs(checkpoint_dir, exist_ok=True)
 
-    # Dataset and DataLoader
+    # Dataset and Dataloader
     nc_files = glob.glob(data_path)
     dataset = BurnedAreaDataset(nc_files)
-    
 
-    # Split the dataset into train, validation, and test sets
-    train_set, val_set, test_set = split_dataset(dataset)
+    # split the dataset into train, validation, test sets
+    train_set, validation_set, test_set = split_dataset(dataset)
 
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
+    validation_loader = DataLoader(validation_set, batch_size=batch_size, shuffle=False)
     test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False)
 
-    # Model, Loss, Optimizer
-    in_channels = dataset[0][0].shape[0]  # Number of input channels
-    out_channels = 1  # Binary segmentation
-    model = UNet3D(in_channels, out_channels)
+    # model, loss, optimizer
+    # set input channels (nunber of dynamic + static variables)
+    input_channels = dataset[0][0].shape[0] # get input from input_tensor
+    output_channels = 1 # binary classification
+
+    model = UNet3D(
+        in_channels=input_channels,
+        out_channels=output_channels, 
+        num_filters=num_filters, 
+        kernel_size=kernel_size, 
+        pool_size=pool_size, 
+        use_batchnorm=use_batchnorm, 
+        final_activation=final_activation)
+
+    #model = UNet3D(input_channels, output_channels)                
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
 
     criterion = nn.BCEWithLogitsLoss()
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+    optimizer = optim.Adam(model.parameters(), lr=learing_rate)
 
-    # Training Loop
     for epoch in range(num_epochs):
         model.train()
         epoch_loss = 0
         epoch_dice = 0
 
-        for inputs, targets in train_loader:
+        for inputs, labels in train_loader:
             inputs = inputs.to(device)
-            targets = targets.to(device)
-            targets = targets.unsqueeze(1)  # Add channel dimension
-
+            labels = labels.to(device)
+            labels = labels.unsqueeze(1) # add a dimention 
+            #print('Label size after unsqueeze:', labels.shape)
+            #print('Input size:', inputs.shape)
+      
             optimizer.zero_grad()
             outputs = model(inputs)
 
-            loss = criterion(outputs, targets)
+            loss = criterion(outputs, labels)
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1)
             optimizer.step()
 
             epoch_loss += loss.item()
-            epoch_dice += dice_coefficient(outputs, targets).item()
+            epoch_dice += dice_coefficient(outputs, labels).item()
 
         avg_loss = epoch_loss / len(train_loader)
         avg_dice = epoch_dice / len(train_loader)
-        print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}, Dice Coefficient: {avg_dice:.4f}')
+        print(f'Epoch [{epoch}/{num_epochs}], Loss: {avg_loss:.4f}, Dice Coefficient: {avg_dice:.4f}')
 
-        # Save model checkpoint
-        checkpoint_path = os.path.join(checkpoint_dir, f'model_epoch_{epoch+1}.pth')
+        # save model chackpoint
+        checkpoint_path = os.path.join(checkpoint_dir, f'model_epoch{epoch+1}.pth')
         torch.save(model.state_dict(), checkpoint_path)
 
-        # Validate on validation set
+        # validate the model on validation set
         model.eval()
-        val_loss = 0
-        val_dice = 0
+        validation_loss = 0
+        validation_dice = 0
         with torch.no_grad():
-            for inputs, targets in val_loader:
+            for inputs, labels in validation_loader:
                 inputs = inputs.to(device)
-                targets = targets.to(device)
-                targets = targets.unsqueeze(1)  # Add channel dimension
+                labels = labels.to(device)
+                labels = labels.unsqueeze(1)
 
                 outputs = model(inputs)
-                loss = criterion(outputs, targets)
+                loss = criterion(outputs, labels)
 
-                val_loss += loss.item()
-                val_dice += dice_coefficient(outputs, targets).item()
+                validation_loss += loss.item()
+                validation_dice += dice_coefficient(outputs, labels).item()
 
-        avg_val_loss = val_loss / len(val_loader)
-        avg_val_dice = val_dice / len(val_loader)
-        print(f'Validation Loss: {avg_val_loss:.4f}, Validation Dice Coefficient: {avg_val_dice:.4f}')
+        avg_validation_loss = validation_loss / len(validation_loader)
+        avg_validation_dice = validation_dice / len(validation_loader)
+        print(f'Validation Loss: {avg_validation_loss:.4f}, Validation Dice Coefficient: {avg_validation_dice:.4f}\n')
+        
 
 if __name__ == '__main__':
-    train()
+
+    with open('WildFireSpread/WildFireSpread_UNET/configs/train_config.yaml', 'r') as train_config:
+        config = yaml.safe_load(train_config)
+    train_config.close()
+
+    dataset_path     = config['dataset']['train_dataset']
+    checkpoints      = config['dataset']['checkpoints']
+    num_filters      = config['model']['num_filters']
+    kernel_size      = config['model']['kernel_size']
+    pool_size        = config['model']['pool_size']
+    use_batchnorm    = config['model']['use_batchnorm']
+    final_activation = config['model']['final_activation']
+
+    print(f'Currect settings for traing: \n Train dataset path: {dataset_path} \n Checkpoints save path: {checkpoints} \n Number of filters: {num_filters} \n Kernel Size: {kernel_size} \n Pool Size: {pool_size} \n Use Batchnoorm: {use_batchnorm} \n Final Activation: {final_activation}')
+    exit()
+
+    train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_batchnorm, final_activation)

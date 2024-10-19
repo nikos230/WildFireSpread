@@ -1,0 +1,10 @@
+dataset:
+  train_dataset:   'WildFireSpread/train_dataset'                   # path to dataset contaaining train and validation samples
+  checkpoints:     'WildFireSpread/WildFireSpread_UNET/checkpoints' # path to save model checkpoints after each epoch
+
+model:
+  num_filters:      '[64, 128, 256]' # number of filters in encoder and decoder blocks
+  kernel_size:      '3'              # kernel size (filter size) 3x3, 5x5, 7x7
+  pool_size:        '(1, 2, 2)'      # feature map size
+  use_batchnorm:    'True'           # normalize after convolution block with ReLU
+  final_activation: 'None'           # apply activation function in output, leave None and use in activation in test.py
