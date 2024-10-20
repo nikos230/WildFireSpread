@@ -1,5 +1,5 @@
-![Atl text](https://github.com/nikos230/WildFireSpread/blob/main/flowRoot4774.png)
+![Atl text](https://github.com/nikos230/WildFireSpread/blob/main/logo.png)
 
 
-# WildFireSpread
+
 test test test test
