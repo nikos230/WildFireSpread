@@ -3,7 +3,7 @@ import torch.nn as nn
 
 class UNet3D(nn.Module):
     def __init__(self, in_channels, out_channels, num_filters, kernel_size, pool_size, 
-                 use_batchnorm=True, final_activation=None):
+                 use_batchnorm=True, final_activation=None, dropout_rate=0.3):
         """
         Parameters:
         - in_channels: Number of input channels (e.g., 1 for grayscale, 3 for RGB)
@@ -13,42 +13,46 @@ class UNet3D(nn.Module):
         - pool_size: Pooling size for downsampling (default is (1, 2, 2))
         - use_batchnorm: Whether to use batch normalization in the conv blocks (default is True)
         - final_activation: Activation function to apply at the final output (e.g., nn.Sigmoid() or nn.Softmax(dim=1))
+        - dropout_rate: Dropout rate applied after ReLU activations to prevent overfitting
         """
         super(UNet3D, self).__init__()
         
-        # Store parameters for flexibility
         self.num_filters = num_filters
         self.kernel_size = kernel_size
         self.pool_size = pool_size
         self.use_batchnorm = use_batchnorm
         self.final_activation = final_activation
+        self.dropout_rate = dropout_rate  # Dropout rate
 
         # Encoder
-        self.encoders = nn.ModuleList([self.conv_block(in_channels, num_filters[0])])
+        self.encoders = nn.ModuleList([self.conv_block(in_channels, num_filters[0], dropout_rate=self.dropout_rate)])
         self.pools = nn.ModuleList([nn.MaxPool3d(kernel_size=self.pool_size)])
         for i in range(1, len(num_filters)):
-            self.encoders.append(self.conv_block(num_filters[i-1], num_filters[i]))
+            self.encoders.append(self.conv_block(num_filters[i-1], num_filters[i], dropout_rate=self.dropout_rate))
             self.pools.append(nn.MaxPool3d(kernel_size=self.pool_size))
 
         # Bottleneck
-        self.bottleneck = self.conv_block(num_filters[-1], num_filters[-1] * 2)
+        self.bottleneck = self.conv_block(num_filters[-1], num_filters[-1] * 2, dropout_rate=self.dropout_rate)
 
         # Decoder
         self.upconvs = nn.ModuleList()
         self.decoders = nn.ModuleList()
         for i in reversed(range(1, len(num_filters))):
             self.upconvs.append(nn.ConvTranspose3d(num_filters[i]*2, num_filters[i], kernel_size=self.pool_size, stride=self.pool_size))
-            self.decoders.append(self.conv_block(num_filters[i]*2, num_filters[i]))
+            self.decoders.append(self.conv_block(num_filters[i]*2, num_filters[i], dropout_rate=self.dropout_rate))
         
         self.upconvs.append(nn.ConvTranspose3d(num_filters[0]*2, num_filters[0], kernel_size=self.pool_size, stride=self.pool_size))
-        self.decoders.append(self.conv_block(num_filters[0]*2, num_filters[0]))
+        self.decoders.append(self.conv_block(num_filters[0]*2, num_filters[0], dropout_rate=self.dropout_rate))
 
         # Final convolution
         self.conv_final = nn.Conv3d(num_filters[0], out_channels, kernel_size=1)
 
 
-
-    def conv_block(self, in_channels, out_channels):
+    def conv_block(self, in_channels, out_channels, dropout_rate=0.3):
+        """
+        A helper function to create a convolutional block consisting of two Conv3D layers, 
+        BatchNorm (if enabled), ReLU activation, and optional Dropout.
+        """
         layers = [
             nn.Conv3d(in_channels, out_channels, kernel_size=self.kernel_size, padding=1),
             nn.ReLU(inplace=True)
@@ -60,18 +64,15 @@ class UNet3D(nn.Module):
             nn.Conv3d(out_channels, out_channels, kernel_size=self.kernel_size, padding=1),
             nn.ReLU(inplace=True)
         ]
+        
+        # Apply BatchNorm if enabled
         if self.use_batchnorm:
             layers.insert(3, nn.BatchNorm3d(out_channels))
         
-        #layers += [ # new
-            #nn.Conv3d(out_channels, out_channels, kernel_size=self.kernel_size, padding=1),
-            #nn.ReLU(inplace=True)
-        #]
-        #if self.use_batchnorm:
-            l#ayers.insert(3, nn.BatchNorm3d(out_channels))
-            
+        # Add Dropout layer after ReLU
+        layers.append(nn.Dropout3d(p=dropout_rate))
+        
         return nn.Sequential(*layers)
-
 
 
     def forward(self, x):
@@ -102,3 +103,8 @@ class UNet3D(nn.Module):
             x = self.final_activation(x)
 
         return x
+
+# Example model instantiation
+model = UNet3D(in_channels=28, out_channels=1, num_filters=[64, 128, 256], 
+               kernel_size=3, pool_size=(1, 2, 2), use_batchnorm=True, 
+               final_activation=nn.Sigmoid(), dropout_rate=0.3)

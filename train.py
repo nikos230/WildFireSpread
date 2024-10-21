@@ -58,7 +58,8 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         kernel_size=kernel_size, 
         pool_size=ast.literal_eval(pool_size), 
         use_batchnorm=use_batchnorm, 
-        final_activation=final_activation)
+        final_activation=final_activation,
+        dropout_rate=0.3)
 
     device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
     model.to(device)
@@ -67,7 +68,7 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
     #criterion = FocalLoss(alpha=0.8, gamma=0.5)
     criterion = IoULoss()
     #criterion = BCEIoULoss()
-    optimizer = optim.Adam(model.parameters(), lr=learing_rate)
+    optimizer = optim.Adam(model.parameters(), lr=learing_rate, weight_decay=1e-5)
     #optimizer = torch.optim.AdamW(model.parameters(), lr=learing_rate, weight_decay=1e-2)  # You can tune weight decay
 
     for epoch in range(num_epochs):
