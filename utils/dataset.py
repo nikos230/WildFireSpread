@@ -14,6 +14,7 @@ class BurnedAreaDataset(Dataset):
     def load_data(self):
         for file in self.nc_files:
             sample = xr.open_dataset(file)
+            
 
             dynamic_vars = [
                 'd2m', 'ignition_points', 'lai', 'lst_day', 'lst_night',

@@ -36,11 +36,7 @@ for filename in files:
             ds[variable] = data.fillna(0)
             #ds[variable] = data.interpolate_na(dim=["y", "x"], method="nearest", use_coordinate=True)
         
-        # check again for nan after interpolation
-        #if np.isnan(ds[variable]).any():
-                #print(f"Warning: Interpolation did not fill all NaN values in {variable} of {filename}.")
-                # Optionally: Handle remaining NaNs (e.g., fill with a default value or skip the sample)
-               # ds[variable] = ds[variable].fillna(0)    
+            
 
 
     if skip_file == True:

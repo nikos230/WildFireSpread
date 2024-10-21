@@ -1,10 +1,15 @@
 dataset:
-  train_dataset:   'WildFireSpread/train_dataset'                   # path to dataset contaaining train and validation samples
-  checkpoints:     'WildFireSpread/WildFireSpread_UNET/checkpoints' # path to save model checkpoints after each epoch
+  train_dataset:    'WildFireSpread/train_dataset'                   # path to dataset contaaining train and validation samples
+  checkpoints:      'WildFireSpread/WildFireSpread_UNET/checkpoints' # path to save model checkpoints after each epoch
 
 model:
-  num_filters:      '[64, 128, 256]' # number of filters in encoder and decoder blocks
-  kernel_size:      '3'              # kernel size (filter size) 3x3, 5x5, 7x7
-  pool_size:        '(1, 2, 2)'      # feature map size
-  use_batchnorm:    'True'           # normalize after convolution block with ReLU
-  final_activation: 'None'           # apply activation function in output, leave None and use in activation in test.py
+  num_filters:      [8] # number of filters in encoder and decoder blocks ( [64, 128, 512] or [32, 64, 128] pr [64, 128] ) 128 256 or 64 128 
+  kernel_size:      3              # kernel size (filter size) 3x3, 5x5, 7x7
+  pool_size:        (1, 4, 4)      # feature map size
+  use_batchnorm:    False           # normalize after convolution block with ReLU
+  final_activation: null           # apply activation function in output (nn.Sigmoid), leave null and use in activation in test.py
+
+training: 
+  number_of_epochs: 100           # number of epochs
+  batch_size:       4             # how many samples will be procesed in one run (not more than 10, it will run out of memory)
+  learing_rate:     1e-4          # lerning rate

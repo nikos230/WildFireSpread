@@ -10,8 +10,8 @@ import numpy as np
 
 def test():
     # Paths
-    test_data_path = 'WildFireSpread/dataset_test/*.nc'  # Update with your test data path
-    checkpoint_path = 'WildFireSpread/WildFireSpread_UNET/checkpoints/model_epoch20.pth'  # Update with your checkpoint path
+    test_data_path = 'WildFireSpread/test_dataset/*.nc'  # Update with your test data path
+    checkpoint_path = 'WildFireSpread/WildFireSpread_UNET/checkpoints/model_epoch38.pth'  # Update with your checkpoint path
 
     # Dataset and DataLoader
     nc_files = glob.glob(test_data_path)
@@ -24,7 +24,7 @@ def test():
     model = UNet3D(
         in_channels=in_channels,
         out_channels=out_channels,
-        num_filters=[64, 128, 256],  # Modify as necessary based on your model
+        num_filters=[64, 128],  # Modify as necessary based on your model
         kernel_size=3,
         pool_size=(1, 2, 2),
         use_batchnorm=True,

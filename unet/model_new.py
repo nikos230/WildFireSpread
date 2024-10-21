@@ -63,6 +63,13 @@ class UNet3D(nn.Module):
         if self.use_batchnorm:
             layers.insert(3, nn.BatchNorm3d(out_channels))
         
+        #layers += [ # new
+            #nn.Conv3d(out_channels, out_channels, kernel_size=self.kernel_size, padding=1),
+            #nn.ReLU(inplace=True)
+        #]
+        #if self.use_batchnorm:
+            l#ayers.insert(3, nn.BatchNorm3d(out_channels))
+            
         return nn.Sequential(*layers)
 
 
