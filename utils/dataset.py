@@ -17,16 +17,37 @@ class BurnedAreaDataset(Dataset):
             
 
             dynamic_vars = [
-                'd2m', 'ignition_points', 'lai', 'lst_day', 'lst_night',
-                'ndvi', 'rh', 'smi', 'sp', 'ssrd', 't2m', 'tp',
-                'wind_direction', 'wind_speed'
+                'd2m', 
+                'ignition_points', 
+                'lai', 
+                'lst_day', 
+                'lst_night',
+                'ndvi', 
+                'rh', 
+                #'smi', 
+                #'sp', 
+                #'ssrd',
+                't2m', 
+                #'tp',
+                'wind_direction',
+                'wind_speed'
             ]
 
             static_vars = [
-                'aspect', 'curvature', 'dem', 'roads_distance', 'slope',
-                'lc_agriculture', 'lc_forest', 'lc_grassland', 'lc_settlement',
-                'lc_shrubland', 'lc_sparse_vegetation', 'lc_water_bodies',
-                'lc_wetland', 'population'
+                'aspect',
+                'curvature',
+                'dem', 
+                #'roads_distance',
+                'slope',
+                #'lc_agriculture',
+                'lc_forest', 
+                #'lc_grassland', 
+                #'lc_settlement',
+                #'lc_shrubland', 
+                #'lc_sparse_vegetation',
+                #'lc_water_bodies',
+                #'lc_wetland', 
+                #'population'
             ]
 
             time_steps = sample['time'].size # number of time steps in sample
@@ -63,7 +84,7 @@ class BurnedAreaDataset(Dataset):
                 continue
 
             # label varible
-            label = sample['burned_areas'].values[0] # get label for time=0 (first fire day)
+            label = sample['burned_areas'].values[3] # get label for time=0 (first fire day)
             label = (label > 0).astype(np.float32) # make is binary
 
             if np.isnan(label).any() or np.isinf(label).any():

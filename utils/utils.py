@@ -6,8 +6,9 @@ def normalize_data(data):
     data = (data - np.min(data)) / (np.max(data) - np.min(data) + 1e-8)
     return data
 
-def dice_coefficient(preds, targets, smooth=1e-6):
+def dice_coefficient(preds, targets, threshold=0.5, smooth=1e-6):
     preds = torch.sigmoid(preds)
+    preds = (preds > threshold).float()
     preds = preds.view(-1)
     targets = targets.view(-1)
     intersection = (preds * targets).sum()

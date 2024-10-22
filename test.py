@@ -11,7 +11,7 @@ import numpy as np
 def test():
     # Paths
     test_data_path = 'WildFireSpread/test_dataset/*.nc'  # Update with your test data path
-    checkpoint_path = 'WildFireSpread/WildFireSpread_UNET/checkpoints/model_epoch38.pth'  # Update with your checkpoint path
+    checkpoint_path = 'WildFireSpread/WildFireSpread_UNET/checkpoints/model_epoch7.pth'  # Update with your checkpoint path
 
     # Dataset and DataLoader
     nc_files = glob.glob(test_data_path)
@@ -30,7 +30,7 @@ def test():
         use_batchnorm=True,
         final_activation=None
     )
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
     model.load_state_dict(torch.load(checkpoint_path, map_location=device))
     model.to(device)
     model.eval()

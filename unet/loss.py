@@ -95,3 +95,113 @@ class BCEIoULoss(nn.Module):
         return total_loss
 
 
+class DiceLoss(nn.Module):
+    def __init__(self, smooth=1e-6, reduction='mean'):
+        """
+        Dice Loss for binary segmentation tasks.
+        
+        Parameters:
+        - smooth: Smoothing factor to avoid division by zero (default is 1e-6).
+        - reduction: 'mean' or 'sum' to apply reduction over batch.
+        """
+        super(DiceLoss, self).__init__()
+        self.smooth = smooth
+        self.reduction = reduction
+
+    def forward(self, preds, targets):
+        """
+        Parameters:
+        - preds: Predictions (logits before sigmoid), shape: (batch_size, 1, height, width, ...)
+        - targets: Ground truth labels (binary 0 or 1), shape: (batch_size, 1, height, width, ...)
+        """
+        # Apply sigmoid to convert logits to probabilities
+        preds = torch.sigmoid(preds)
+
+        # Flatten the tensors to compute dice over the entire volume
+        preds = preds.view(-1)
+        targets = targets.view(-1)
+
+        # Calculate intersection and union
+        intersection = (preds * targets).sum()
+        total = preds.sum() + targets.sum()
+
+        # Compute Dice score and Dice loss
+        dice_score = (2.0 * intersection + self.smooth) / (total + self.smooth)
+        dice_loss = 1 - dice_score
+
+        # Apply reduction ('mean' or 'sum')
+        if self.reduction == 'mean':
+            return dice_loss.mean()
+        elif self.reduction == 'sum':
+            return dice_loss.sum()
+        else:
+            return dice_loss
+
+
+class F1ScoreLoss(nn.Module):
+    def __init__(self, smooth=1e-6, reduction='mean'):
+        """
+        F1 Score Loss for binary classification tasks. Minimizing this loss is equivalent to maximizing the F1 score.
+        
+        Parameters:
+        - smooth: Smoothing factor to avoid division by zero (default is 1e-6).
+        - reduction: 'mean' or 'sum' to apply reduction over batch.
+        """
+        super(F1ScoreLoss, self).__init__()
+        self.smooth = smooth
+        self.reduction = reduction
+
+    def forward(self, preds, targets):
+        """
+        Parameters:
+        - preds: Predictions (logits before sigmoid), shape: (batch_size, 1, height, width, ...)
+        - targets: Ground truth labels (binary 0 or 1), shape: (batch_size, 1, height, width, ...)
+        """
+        # Apply sigmoid to convert logits to probabilities
+        preds = torch.sigmoid(preds)
+
+        # Flatten the predictions and targets to compute metrics over all pixels
+        preds = preds.view(-1)
+        targets = targets.view(-1)
+
+        # Compute precision and recall components
+        TP = (preds * targets).sum()  # True Positives
+        FP = ((1 - targets) * preds).sum()  # False Positives
+        FN = (targets * (1 - preds)).sum()  # False Negatives
+
+        # Compute precision and recall
+        precision = (TP + self.smooth) / (TP + FP + self.smooth)
+        recall = (TP + self.smooth) / (TP + FN + self.smooth)
+
+        # Compute F1 score
+        f1_score = 2 * (precision * recall) / (precision + recall + self.smooth)
+
+        # F1 loss is 1 - F1 score
+        f1_loss = 1 - f1_score
+
+        # Apply reduction ('mean' or 'sum')
+        if self.reduction == 'mean':
+            return f1_loss.mean()
+        elif self.reduction == 'sum':
+            return f1_loss.sum()
+        else:
+            return f1_loss
+
+
+
+
+
+class BCEDiceLoss(nn.Module):
+    def __init__(self, smooth=1e-6, bce_weight=0.5, dice_weight=0.5):
+        super(BCEDiceLoss, self).__init__()
+        self.bce = nn.BCEWithLogitsLoss()
+        self.dice = DiceLoss(smooth=smooth)
+        self.bce_weight = bce_weight
+        self.dice_weight = dice_weight
+
+    def forward(self, preds, targets):
+        bce_loss = self.bce(preds, targets)
+        dice_loss = self.dice(preds, targets)
+        return (self.bce_weight * bce_loss) + (self.dice_weight * dice_loss)
+
+

@@ -5,7 +5,7 @@ from torch.utils.data import DataLoader, Subset
 from sklearn.model_selection import train_test_split
 from utils.dataset import BurnedAreaDataset
 from unet.model_new import UNet3D
-from unet.loss import FocalLoss, IoULoss, BCEIoULoss
+from unet.loss import FocalLoss, IoULoss, BCEIoULoss, BCEDiceLoss, F1ScoreLoss
 from utils.utils import dice_coefficient
 from utils.utils import f1_score
 from utils.utils import accuracy
@@ -66,9 +66,11 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
 
     #criterion = nn.BCEWithLogitsLoss()
     #criterion = FocalLoss(alpha=0.8, gamma=0.5)
-    criterion = IoULoss()
-    #criterion = BCEIoULoss()
-    optimizer = optim.Adam(model.parameters(), lr=learing_rate, weight_decay=1e-5)
+    #criterion = IoULoss()
+    #criterion = BCEDiceLoss()
+    #criterion = F1ScoreLoss()
+    criterion = BCEIoULoss()
+    optimizer = optim.Adam(model.parameters(), lr=learing_rate)#, weight_decay=1e-5)
     #optimizer = torch.optim.AdamW(model.parameters(), lr=learing_rate, weight_decay=1e-2)  # You can tune weight decay
 
     for epoch in range(num_epochs):
