@@ -4,13 +4,14 @@ import xarray as xr
 import matplotlib.pyplot as plt
 
 output  = 'WildFireSpread/WildFireSpread_UNET/output_plots'
-sample  = 'WildFireSpread/train_dataset/corrected_sample_2.nc'
+sample  = 'WildFireSpread/test_dataset/corrected_sample_577.nc'
 
 ds =  xr.open_dataset(sample)
 
 print(ds.data_vars)
 print(ds.dims)
 data = ds['burned_areas']
+#data = ds['ignition_points']
 
 
 

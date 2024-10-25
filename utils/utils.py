@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+import torchmetrics
 
 def normalize_data(data):
     # Normalize data to [0, 1]
@@ -61,3 +62,32 @@ def recall(preds, targets, threshold=0.5, smooth=1e-6):
 
     recall_value = (tp + smooth) / (tp + fn + smooth)  # Recall calculation
     return recall_value
+
+
+def auroc(preds, targets, num_classes=2):
+    """
+    Compute the Area Under the Receiver Operating Characteristic Curve (AUROC).
+
+    Args:
+        preds (torch.Tensor): Predicted logits or probabilities.
+        targets (torch.Tensor): Ground truth binary labels.
+        num_classes (int): Number of classes. Defaults to 2 (binary classification).
+
+    Returns:
+        auroc_value: The computed AUROC value.
+    """
+    preds = torch.sigmoid(preds)  # Apply sigmoid to convert logits to probabilities
+
+    # Set the appropriate task for AUROC
+    if num_classes == 2:
+        task = "binary"
+    else:
+        task = "multiclass"
+
+    # Initialize AUROC metric
+    auroc_metric = torchmetrics.AUROC(task=task, num_classes=num_classes)
+    auroc_value = auroc_metric(preds, targets.int())  # Compute AUROC
+
+    return auroc_value
+
+    

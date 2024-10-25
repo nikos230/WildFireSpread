@@ -24,11 +24,11 @@ class BurnedAreaDataset(Dataset):
                 'lst_night',
                 'ndvi', 
                 'rh', 
-                #'smi', 
-                #'sp', 
-                #'ssrd',
+                'smi', 
+                'sp', 
+                'ssrd',
                 't2m', 
-                #'tp',
+                'tp',
                 'wind_direction',
                 'wind_speed'
             ]
@@ -37,17 +37,17 @@ class BurnedAreaDataset(Dataset):
                 'aspect',
                 'curvature',
                 'dem', 
-                #'roads_distance',
+                'roads_distance',
                 'slope',
-                #'lc_agriculture',
+                'lc_agriculture',
                 'lc_forest', 
-                #'lc_grassland', 
-                #'lc_settlement',
-                #'lc_shrubland', 
-                #'lc_sparse_vegetation',
-                #'lc_water_bodies',
-                #'lc_wetland', 
-                #'population'
+                'lc_grassland', 
+                'lc_settlement',
+                'lc_shrubland', 
+                'lc_sparse_vegetation',
+                'lc_water_bodies',
+                'lc_wetland', 
+                'population'
             ]
 
             time_steps = sample['time'].size # number of time steps in sample

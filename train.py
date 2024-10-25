@@ -11,25 +11,24 @@ from utils.utils import f1_score
 from utils.utils import accuracy
 from utils.utils import iou
 from utils.utils import recall
+from utils.utils import auroc
 import glob
 import os
 import numpy as np
 import yaml
 import ast
 
-def split_dataset(dataset, validation_size=0.2, test_size=0.1):
+def split_dataset(dataset, validation_size=0.2):
     indices = list(range(len(dataset)))
-    train_validation_indices, test_indices = train_test_split(indices, test_size=test_size, random_state=42)
-    train_indices, validation_indices = train_test_split(train_validation_indices, test_size=validation_size, random_state=42)
+    train_indices, validation_indices = train_test_split(indices, test_size=validation_size, random_state=42)
 
     train_set = Subset(dataset, train_indices)
     validation_set = Subset(dataset, validation_indices)
-    test_set = Subset(dataset, test_indices)
 
-    return train_set, validation_set, test_set
+    return train_set, validation_set
 
 
-def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_batchnorm, final_activation, num_epochs, batch_size, learing_rate):
+def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_batchnorm, final_activation, num_epochs, batch_size, learing_rate, drop_out_rate):
 
     # make checkpoints folder if not exist
     os.makedirs(checkpoints, exist_ok=True)
@@ -40,11 +39,10 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
     print(f'Number of samples: {len(nc_files)}')
 
     # split the dataset into train, validation, test sets
-    train_set, validation_set, test_set = split_dataset(dataset)
+    train_set, validation_set = split_dataset(dataset)
 
     train_loader = DataLoader(train_set, batch_size=batch_size, shuffle=True)
     validation_loader = DataLoader(validation_set, batch_size=batch_size, shuffle=False)
-    test_loader = DataLoader(test_set, batch_size=batch_size, shuffle=False)
 
     # model, loss, optimizer
     # set input channels (nunber of dynamic + static variables)
@@ -59,9 +57,10 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         pool_size=ast.literal_eval(pool_size), 
         use_batchnorm=use_batchnorm, 
         final_activation=final_activation,
-        dropout_rate=0.3)
+        dropout_rate=0.4)
 
     device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+    print(device)
     model.to(device)
 
     #criterion = nn.BCEWithLogitsLoss()
@@ -81,6 +80,7 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         #epoch_accuracy = 0
         epoch_iou      = 0
         epoch_recall   = 0
+        epoch_auroc    = 0
 
         for inputs, labels in train_loader:
             inputs = inputs.to(device)
@@ -103,6 +103,7 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
             #epoch_accuracy += accuracy(outputs, labels).item()
             epoch_iou += iou(outputs, labels).item()
             epoch_recall += recall(outputs, labels).item()
+            epoch_auroc += auroc(outputs, labels).item()
 
         avg_loss = epoch_loss / len(train_loader)
         avg_dice = epoch_dice / len(train_loader)
@@ -110,11 +111,12 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         #avg_accuracy = epoch_accuracy / len(train_loader)
         avg_iou = epoch_iou / len(train_loader)
         avg_recall = epoch_recall / len(train_loader)
-        print(f'Epoch [{epoch}/{num_epochs}], Loss: {avg_loss:.4f}, Dice Coefficient: {avg_dice:.4f}, f1 Score: {avg_f1:.4f}, iou: {avg_iou:.4f}, recall: {avg_recall:.4f}')
+        avg_auroc = epoch_auroc / len(train_loader)
+        print(f'Epoch [{epoch}/{num_epochs}], Loss: {avg_loss:.4f}, Dice Coefficient: {avg_dice:.4f}, f1 Score: {avg_f1:.4f}, iou: {avg_iou:.4f}, auroc: {avg_auroc:.4f}')
 
         # save model chackpoint
         checkpoint_path = os.path.join(checkpoints, f'model_epoch{epoch+1}.pth')
-        #torch.save(model.state_dict(), checkpoint_path)
+        torch.save(model.state_dict(), checkpoint_path)
 
         # validate the model on validation set
         model.eval()
@@ -124,6 +126,7 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         #validation_accuracy = 0
         validation_iou = 0
         validation_recall = 0
+        validation_auroc = 0
         with torch.no_grad():
             for inputs, labels in validation_loader:
                 inputs = inputs.to(device)
@@ -139,6 +142,7 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
                 #validation_accuracy += accuracy(outputs, labels).item()
                 validation_iou += iou(outputs, labels).item()
                 validation_recall += recall(outputs, labels).item()
+                validation_auroc += auroc(outputs, labels).item()
 
         avg_validation_loss = validation_loss / len(validation_loader)
         avg_validation_dice = validation_dice / len(validation_loader)
@@ -146,7 +150,8 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         #avg_validation_accuracy = validation_accuracy / len(validation_loader)
         avg_validation_iou = validation_iou / len(validation_loader)
         avg_validation_recall = validation_recall / len(validation_loader)
-        print(f'Validation Loss: {avg_validation_loss:.4f}, Validation Dice Coefficient: {avg_validation_dice:.4f}, f1 Score: {avg_validation_f1:.4f}, iou: {avg_validation_iou:.4f}, recall: {avg_validation_recall:.4f}\n')
+        avg_validation_auroc = validation_auroc / len(validation_loader)
+        print(f'Validation Loss: {avg_validation_loss:.4f}, Validation Dice Coefficient: {avg_validation_dice:.4f}, f1 Score: {avg_validation_f1:.4f}, iou: {avg_validation_iou:.4f}, auroc: {avg_validation_auroc:.4f}\n')
         
 
 if __name__ == '__main__':
@@ -165,7 +170,8 @@ if __name__ == '__main__':
     num_epochs       = config['training']['number_of_epochs']
     batch_size       = config['training']['batch_size']
     learing_rate     = config['training']['learing_rate']
+    drop_out_rate    = config['training']['drop_out_rate']
 
     print(f'Currect settings for traing: \n Train dataset path: {dataset_path} \n Checkpoints save path: {checkpoints} \n Number of filters: {num_filters} \n Kernel Size: {kernel_size} \n Pool Size: {pool_size} \n Use Batchnoorm: {use_batchnorm} \n Final Activation: {final_activation} \n')
-    print(f'More training settings: \n Number of Epochs: {num_epochs} \n Batch Size: {batch_size} \n Learing Rate: {learing_rate} \n')
-    train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_batchnorm, final_activation, num_epochs, batch_size, float(learing_rate))
+    print(f'More training settings: \n Number of Epochs: {num_epochs} \n Batch Size: {batch_size} \n Learing Rate: {learing_rate} \n Drop out Rate: {drop_out_rate} \n')
+    train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_batchnorm, final_activation, num_epochs, batch_size, float(learing_rate), drop_out_rate)

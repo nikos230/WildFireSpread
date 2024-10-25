@@ -22,8 +22,8 @@ class UNet3D(nn.Module):
         self.pool_size = pool_size
         self.use_batchnorm = use_batchnorm
         self.final_activation = final_activation
-        self.dropout_rate = dropout_rate  # Dropout rate
-
+        self.dropout_rate = dropout_rate  
+        
         # Encoder
         self.encoders = nn.ModuleList([self.conv_block(in_channels, num_filters[0], dropout_rate=self.dropout_rate)])
         self.pools = nn.ModuleList([nn.MaxPool3d(kernel_size=self.pool_size)])
@@ -48,7 +48,7 @@ class UNet3D(nn.Module):
         self.conv_final = nn.Conv3d(num_filters[0], out_channels, kernel_size=1)
 
 
-    def conv_block(self, in_channels, out_channels, dropout_rate=0.3, num_layers=3):
+    def conv_block(self, in_channels, out_channels, dropout_rate=0.3, num_layers=1):
         """
         A helper function to create a convolutional block consisting of multiple Conv3D layers, 
         BatchNorm (if enabled), ReLU activation, and optional Dropout.

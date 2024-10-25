@@ -11,7 +11,7 @@ import numpy as np
 def test():
     # Paths
     test_data_path = 'WildFireSpread/test_dataset/*.nc'  # Update with your test data path
-    checkpoint_path = 'WildFireSpread/WildFireSpread_UNET/checkpoints/model_epoch7.pth'  # Update with your checkpoint path
+    checkpoint_path = 'WildFireSpread/WildFireSpread_UNET/checkpoints/model_epoch30.pth'  # Update with your checkpoint path
 
     # Dataset and DataLoader
     nc_files = glob.glob(test_data_path)
@@ -24,7 +24,7 @@ def test():
     model = UNet3D(
         in_channels=in_channels,
         out_channels=out_channels,
-        num_filters=[64, 128],  # Modify as necessary based on your model
+        num_filters=[64],  # Modify as necessary based on your model
         kernel_size=3,
         pool_size=(1, 2, 2),
         use_batchnorm=True,
@@ -67,21 +67,27 @@ def test():
     avg_dice = total_dice / len(dataloader)
     print(f'Average Dice Coefficient on Test Set: {avg_dice:.4f}')
 
-    # Plot all predictions and ground truths
+    # Plot all predictions, ground truths, and the overlap
     num_samples = len(all_predictions)
-    n_cols = 2  # 1 for prediction, 1 for ground truth
+    n_cols = 3  # 1 for prediction, 1 for ground truth, 1 for overlap
     n_rows = num_samples
 
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(10, 5 * num_samples))
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 5 * num_samples))
 
     for i in range(num_samples):
+        file_name = os.path.basename(nc_files[i]).split('.')[0]
         # Predicted mask
         axes[i, 0].imshow(all_predictions[i], cmap='gray', interpolation='nearest')
-        axes[i, 0].set_title(f'Sample {i+1} - Predicted Mask')
+        axes[i, 0].set_title(f'Sample {i+1} - Predicted Mask, File: {file_name}')
 
         # Ground Truth mask
         axes[i, 1].imshow(all_ground_truths[i], cmap='gray', interpolation='nearest')
         axes[i, 1].set_title(f'Sample {i+1} - Ground Truth Mask')
+
+        # Overlay of prediction and ground truth with transparency
+        axes[i, 2].imshow(all_ground_truths[i], cmap='Greens', interpolation='nearest', alpha=0.5)
+        axes[i, 2].imshow(all_predictions[i], cmap='Reds', interpolation='nearest', alpha=0.5)
+        axes[i, 2].set_title(f'Sample {i+1} - Overlap (Prediction & Label)')
 
         for ax in axes[i]:
             ax.axis('off')  # Hide axis
@@ -89,11 +95,11 @@ def test():
     plt.tight_layout()
 
     # Save the figure with all results
-    output_path = 'WildFireSpread/WildFireSpread_UNET/output_plots/test_results.png'
+    output_path = 'WildFireSpread/WildFireSpread_UNET/output_plots/test_results_with_overlap.png'
     plt.savefig(output_path)
     plt.close()  # Close the figure to free up memory
 
-    print(f'Saved visualization of test samples to {output_path}')
+    print(f'Saved visualization of test samples (with overlap) to {output_path}')
 
 
 if __name__ == '__main__':

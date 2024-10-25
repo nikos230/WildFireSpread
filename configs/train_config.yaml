@@ -11,5 +11,6 @@ model:
 
 training: 
   number_of_epochs: 200           # number of epochs
-  batch_size:       3             # how many samples will be procesed in one run (not more than 10, it will run out of memory)
+  batch_size:       8             # how many samples will be procesed in one run (not more than 10, it will run out of memory)
   learing_rate:     1e-4          # lerning rate
+  drop_out_rate:    0.7           # drop out rate
