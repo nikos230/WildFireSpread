@@ -50,15 +50,15 @@ def check_nc_file_consistency_and_fix(root_folder_path, corrected_root_folder_pa
             else:
                 # Check if the current file has the same variables
                 if current_data_vars != reference_data_vars:
-                    print(f"Data variables mismatch in file: {nc_file} for year {year_folder}")
-                    print(f"Expected: {reference_data_vars}, but got: {current_data_vars}")
+                    #print(f"Data variables mismatch in file: {nc_file} for year {year_folder}")
+                    #print(f"Expected: {reference_data_vars}, but got: {current_data_vars}")
                     print(f"Skipping file: {nc_file}")
                     continue  # Skip this file if data variables mismatch
                 
                 # Check if the current file has the same dimensions
                 if current_dims != reference_dims:
-                    print(f"Dimension mismatch in file: {nc_file} for year {year_folder}")
-                    print(f"Expected: {reference_dims}, but got: {current_dims}")
+                    #print(f"Dimension mismatch in file: {nc_file} for year {year_folder}")
+                    #print(f"Expected: {reference_dims}, but got: {current_dims}")
                     print(f"Skipping file: {nc_file}")
                     continue  # Skip this file if dimensions mismatch
             
@@ -93,6 +93,6 @@ def check_nc_file_consistency_and_fix(root_folder_path, corrected_root_folder_pa
 
 
 # Example usage
-root_folder_path = "WildFireSpread/dataset_mesogeos"
-corrected_root_folder_path = "WildFireSpread/dataset_mesogeos_corrected"
+root_folder_path = "WildFireSpread/dataset_mesogeos_big"
+corrected_root_folder_path = "WildFireSpread/dataset_mesogeos_corrected_big"
 check_nc_file_consistency_and_fix(root_folder_path, corrected_root_folder_path)

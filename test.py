@@ -11,7 +11,7 @@ import numpy as np
 def test():
     # Paths
     test_data_path = 'WildFireSpread/test_dataset/*.nc'  # Update with your test data path
-    checkpoint_path = 'WildFireSpread/WildFireSpread_UNET/checkpoints/model_epoch30.pth'  # Update with your checkpoint path
+    checkpoint_path = 'WildFireSpread/WildFireSpread_UNET/saved_models/model_epoch307_2255samples_58f1_score.pth'  # Update with your checkpoint path
 
     # Dataset and DataLoader
     nc_files = glob.glob(test_data_path)
@@ -24,7 +24,7 @@ def test():
     model = UNet3D(
         in_channels=in_channels,
         out_channels=out_channels,
-        num_filters=[64],  # Modify as necessary based on your model
+        num_filters=[128],  # Modify as necessary based on your model
         kernel_size=3,
         pool_size=(1, 2, 2),
         use_batchnorm=True,
