@@ -4,7 +4,7 @@ import xarray as xr
 import matplotlib.pyplot as plt
 
 output  = 'WildFireSpread/WildFireSpread_UNET/output_plots'
-sample  = 'WildFireSpread/test_dataset/corrected_sample_577.nc'
+sample  = 'WildFireSpread/WildFireSpread_UNET/dataset/dataset_sampled/2015/sample_0.nc'
 
 ds =  xr.open_dataset(sample)
 
@@ -15,7 +15,7 @@ data = ds['burned_areas']
 
 
 
-data2 = data.isel(time=3)
+data2 = data.isel(time=2)
 print(data2.dims)
 
 

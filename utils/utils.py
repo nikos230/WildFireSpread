@@ -1,11 +1,26 @@
 import numpy as np
 import torch
 import torchmetrics
+import os
+import glob
 
 def normalize_data(data):
     # Normalize data to [0, 1]
     data = (data - np.min(data)) / (np.max(data) - np.min(data) + 1e-8)
     return data
+
+
+def load_files(dataset_path, years):
+    # load train or validation set
+    files = []
+    for year in years:
+        year_path = os.path.join(dataset_path, year)
+        new_files = glob.glob(year_path + '/*.nc')
+        files.append(new_files)
+    files = [item for sublist in files for item in sublist]
+
+    return files
+
 
 def dice_coefficient(preds, targets, threshold=0.5, smooth=1e-6):
     preds = torch.sigmoid(preds)

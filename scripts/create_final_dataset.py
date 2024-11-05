@@ -1,98 +1,102 @@
 import os
 import xarray as xr
 import numpy as np
+from tqdm import tqdm
+import yaml
 
-def check_nc_file_consistency_and_fix(root_folder_path, corrected_root_folder_path):
-    # List of years (subfolders)
-    year_folders = [f for f in os.listdir(root_folder_path) if os.path.isdir(os.path.join(root_folder_path, f))]
 
-    for year_folder in year_folders:
-        folder_path = os.path.join(root_folder_path, year_folder)
-        corrected_folder_path = corrected_root_folder_path
-        
-        # Create the corrected directory for the year if it doesn't exist
-        os.makedirs(corrected_folder_path, exist_ok=True)
+def check_dims_and_vars(ds):
+    reference_data_vars = None
+    reference_dims = {'y': 64, 'x': 64, 'time': 6}
+    # get currect dims for the nc file
+    current_data_vars = list(ds.data_vars)
+    current_dims = ds.dims#{dim: ds.dims[dim] for dim in ['y', 'x', 'time'] if dim is ds.dims}
+    
+    # check if they are correct, if not skip sample
+    if current_dims != reference_dims: #or current_data_vars != reference_data_vars:
+        return False
+    else:
+        return True    
 
-        # List all .nc files in the folder
-        nc_files = [f for f in os.listdir(folder_path) if f.endswith('.nc')]
+
+
+def check_for_nans(ds, skip=False):
+    # get all variables from the sample and check for nans and correct them
+    for variable in ds.data_vars:
+        data = ds[variable]
+
+        # check if all variable is nan, then skip it
+        if np.isnan(data).all():
+            skip = True
+            break
+
+        # check if any value if nan and replace it with 0
+        if np.isnan(data).any():
+            ds[variable] = data.fillna(0)
+           
+
+    return ds, skip            
+
+
+
+def create_final_dataset(root_dataset, corrcted_dataset):
+    corrcted_files = 0
+    skipped_files = 0
+    # create output folder if not exist
+    os.makedirs(corrcted_dataset, exist_ok=True)
+
+    # get sample names by year
+    
+    # first get names of year folders
+    years_folders = [f for f in os.listdir(root_dataset) if os.path.isdir(os.path.join(root_dataset, f))]
+
+    for year_folder in tqdm(years_folders):
+        # create output folder for every year for the corrcted dataset
+        os.makedirs(os.path.join(corrcted_dataset, year_folder), exist_ok=True)
+
+        # get all .nc files (samples) from the original folder
+        nc_files = [f for f in os.listdir(os.path.join(root_dataset, year_folder)) if f.endswith('.nc')]
         nc_files.sort()
 
         if not nc_files:
-            print(f"No .nc files found in the folder for year {year_folder}.")
+            print(f'No Files are Found! in {year_folder}')
             continue
+
         
-        print(f'Total number of files in: {folder_path} for year {year_folder} is {len(nc_files)}')
-
-        # Initialize reference variables and dimensions
-        reference_data_vars = None
-        reference_dims = {'x': 64, 'y': 64, 'time': 4}
-        final_files = 0
-
+        # get all nc files from the currect year folder
         for i, nc_file in enumerate(nc_files):
-            file_path = os.path.join(folder_path, nc_file)
+            file_path = os.path.join(os.path.join(root_dataset, year_folder), nc_file)
 
-            # Open the dataset using xarray
-            try:
-                ds = xr.open_dataset(file_path)
-            except Exception as e:
-                print(f"Error opening {nc_file}: {e}")
-                continue
+            ds = xr.open_dataset(file_path)
+
+            if check_dims_and_vars(ds) == False:
+                skipped_files += 1
+                continue # skip tje current sample if it has damaged dims or data variables
             
-            # Extract the data variables and dimensions
-            current_data_vars = list(ds.data_vars)
-            current_dims = {dim: ds.dims[dim] for dim in ['y', 'x', 'time'] if dim in ds.dims}
-
-            # If this is the first file, set it as the reference
-            if i == 0:
-                reference_data_vars = current_data_vars
-                reference_dims = current_dims
-                print(f"Reference variables and dimensions set from {nc_file}")
-            else:
-                # Check if the current file has the same variables
-                if current_data_vars != reference_data_vars:
-                    #print(f"Data variables mismatch in file: {nc_file} for year {year_folder}")
-                    #print(f"Expected: {reference_data_vars}, but got: {current_data_vars}")
-                    print(f"Skipping file: {nc_file}")
-                    continue  # Skip this file if data variables mismatch
-                
-                # Check if the current file has the same dimensions
-                if current_dims != reference_dims:
-                    #print(f"Dimension mismatch in file: {nc_file} for year {year_folder}")
-                    #print(f"Expected: {reference_dims}, but got: {current_dims}")
-                    print(f"Skipping file: {nc_file}")
-                    continue  # Skip this file if dimensions mismatch
+            ds, skip = check_for_nans(ds)
+            if skip == True:
+                skipped_files += 1
+                continue # skip file because a hole variable is nan
             
-            # Check for NaN values in the dataset
-            skip_file = False
+            # save corrected file
+            corrcted_file_path = os.path.join(os.path.join(corrcted_dataset, year_folder), f'corrected_{nc_file}')
+            ds.to_netcdf(corrcted_file_path)
+            ds.close()
+            del ds
+            corrcted_files += 1
 
-            for variable in ds.data_vars:
-                data = ds[variable]
-
-                # Check if all values are NaN
-                if np.isnan(data).all():
-                    print(f"All values in {variable} in file {nc_file} are NaN, skipping file...")
-                    skip_file = True
-                    break
-                
-                # Check for partial NaN values and fix them
-                if np.isnan(data).any():
-                    print(f"Found NaN values in {variable} in file {nc_file}, fixing...")
-                    ds[variable] = data.fillna(0)  # Fill NaN values with 0
+    print(f'Done!, total samples: {corrcted_files}\n skipped samples: {skipped_files}')        
             
-            if skip_file:
-                print(f'Skipped file: {nc_file} for year {year_folder}')
-                continue
-
-            # Save the corrected dataset to the new folder
-            corrected_file_path = os.path.join(corrected_folder_path, f"corrected_{nc_file}")
-            ds.to_netcdf(corrected_file_path)
-            final_files += 1
-            print(f'Processed and saved file: {nc_file} for year {year_folder}')
-
-        print(f"Total number of files processed and saved for year {year_folder}: {final_files}")
 
 
-# Example usage
-root_folder_path = "WildFireSpread/dataset_mesogeos_big"
-corrected_root_folder_path = "WildFireSpread/dataset_mesogeos_corrected_big"
-check_nc_file_consistency_and_fix(root_folder_path, corrected_root_folder_path)
+if __name__ == "__main__":
+
+    with open('WildFireSpread/WildFireSpread_UNET/configs/dataset.yaml', 'r') as file:
+        config = yaml.safe_load(file)
+    file.close()
+
+    # root dataset as been created from dataset_extraction.py and corrected dataset path to be ssaved on (change in configs/dataset.yaml)
+    root_dataset     = config['dataset']['dataset_path']
+    corrcted_dataset = config['dataset']['corrected_dataset_path']     
+
+    create_final_dataset(root_dataset, corrcted_dataset)

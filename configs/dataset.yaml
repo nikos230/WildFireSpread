@@ -1,0 +1,9 @@
+dataset:
+  dataset_path:           'WildFireSpread/WildFireSpread_UNET/dataset/dataset_sampled'            # path to dataset 
+  corrected_dataset_path: 'WildFireSpread/WildFireSpread_UNET/dataset/dataset_sampled_corrected'  # path to corrcted (final) dataset (containing .nc files)
+  #corrected_dataset_path: 'WildFireSpread/WildFireSpread_UNET/dataset/testing'
+
+samples:
+  validation_years: '2015'              # define in which years the model will be validated on while training
+  test_years:       '2021'              # define test years for the final evaluation of model, avaible years 2015 - 2021
+  train_years:      '2020'  # define train years, use 'all' to use all available years except from validation and test years

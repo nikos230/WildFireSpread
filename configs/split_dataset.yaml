@@ -1,9 +1,0 @@
-dataset:
-  dataset_path:       'WildFireSpread/dataset_mesogeos_corrected_big' # path to dataset (containing .nc files)
-  train_dataset_path: 'WildFireSpread/train_dataset_big'                   # path to save train dataset
-  test_dataset_path:  'WildFireSpread/test_dataset_big'                    # path to save test dataset
-
-samples:
-  numbner_of_samples: '2506' # number of sample to get from dataset (which is in dataset_path)
-  train_split:        '0.9' # percentage of the above samples to be in train dataset
-  test_split:         '0.1' # percentage of the above samples to be in test dataset (isolated from train and validation datasets)

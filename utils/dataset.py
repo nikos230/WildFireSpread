@@ -14,7 +14,6 @@ class BurnedAreaDataset(Dataset):
     def load_data(self):
         for file in self.nc_files:
             sample = xr.open_dataset(file)
-            
 
             dynamic_vars = [
                 'd2m', 
@@ -66,7 +65,7 @@ class BurnedAreaDataset(Dataset):
 
             # put all varibles into a tensor
             input_tensor = np.stack(inputs, axis=0)    
-            
+            #print(input_tensor[0][0].shape)
             # normazise data, each channel individually
             for channel in range(input_tensor.shape[0]):
                 channel_data = input_tensor[channel]
@@ -84,7 +83,7 @@ class BurnedAreaDataset(Dataset):
                 continue
 
             # label varible
-            label = sample['burned_areas'].values[3] # get label for time=0 (first fire day)
+            label = sample['burned_areas'].values[2] # get label for time=0 (first fire day)
             label = (label > 0).astype(np.float32) # make is binary
 
             if np.isnan(label).any() or np.isinf(label).any():
@@ -107,4 +106,10 @@ class BurnedAreaDataset(Dataset):
             input_tensor = self.transform(input_tensor)
             label = self.transform(label)
         return input_tensor, label    
+
+
+if __name__ == '__main__':
+    samples_path = ['WildFireSpread/WildFireSpread_UNET/dataset/dataset_sampled_corrected/2015/corrected_sample_0.nc']
+
+    sample = BurnedAreaDataset(samples_path)
 
