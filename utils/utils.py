@@ -3,6 +3,7 @@ import torch
 import torchmetrics
 import os
 import glob
+import xarray as xr
 
 def normalize_data(data):
     # Normalize data to [0, 1]
@@ -10,13 +11,71 @@ def normalize_data(data):
     return data
 
 
-def load_files(dataset_path, years):
+def load_files_train(dataset_path, years, countries):
     # load train or validation set
     files = []
     for year in years:
         year_path = os.path.join(dataset_path, year)
-        new_files = glob.glob(year_path + '/*.nc')
-        files.append(new_files)
+        for country in countries:
+            country_path = os.path.join(year_path, country)
+            new_files = glob.glob(country_path + '/*.nc')
+            
+            files.append(new_files)
+
+    files = [item for sublist in files for item in sublist]
+
+    return files
+
+
+def load_files_train_(dataset_path, years, countries, burned_area_big, burned_area_ratio):
+    # load train or validation set
+    files = []
+    for year in years:
+        year_path = os.path.join(dataset_path, year)
+        for country in countries:
+            country_path = os.path.join(year_path, country)
+            new_files = glob.glob(country_path + '/*.nc')
+            for new_file in new_files:
+                path_to_file = os.path.join(country_path, new_file)
+
+                ds = xr.open_dataset(path_to_file)
+                if ds.attrs['burned_area_ha'] < burned_area_big:
+                    continue
+                files.append(new_file)
+
+    #files = [item for sublist in files for item in sublist]
+
+    return files    
+
+
+def load_files_validation(dataset_path, years, countries):
+    # load train or validation set
+    files = []
+    for year in years:
+        year_path = os.path.join(dataset_path, year)
+        for country in countries:
+            country_path = os.path.join(year_path, country)
+            new_files = glob.glob(country_path + '/*.nc')
+            
+            files.append(new_files)
+
+    files = [item for sublist in files for item in sublist]
+
+    return files   
+
+
+
+def load_files(dataset_path, years, countries):
+    # load train or validation set
+    files = []
+    for year in years:
+        year_path = os.path.join(dataset_path, year)
+        for country in countries:
+            country_path = os.path.join(year_path, country)
+            new_files = glob.glob(country_path + '/*.nc')
+            
+            files.append(new_files)
+
     files = [item for sublist in files for item in sublist]
 
     return files

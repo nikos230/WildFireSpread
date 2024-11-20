@@ -14,6 +14,8 @@ class BurnedAreaDataset(Dataset):
     def load_data(self):
         for file in self.nc_files:
             sample = xr.open_dataset(file)
+           # sample = sample.isel(time=slice(3, None)) # remove last day (from 6 to 5)
+            #print('test')
 
             dynamic_vars = [
                 'd2m', 
@@ -83,7 +85,7 @@ class BurnedAreaDataset(Dataset):
                 continue
 
             # label varible
-            label = sample['burned_areas'].values[2] # get label for time=0 (first fire day)
+            label = sample['burned_areas'].values[4] # get label for time=4 (first fire day) 
             label = (label > 0).astype(np.float32) # make is binary
 
             if np.isnan(label).any() or np.isinf(label).any():
