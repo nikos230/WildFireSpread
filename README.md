@@ -1,4 +1,4 @@
-![Atl text](https://github.com/nikos230/WildFireSpread/blob/main/logos/logo2png.png)
+![Atl text](https://github.com/nikos230/WildFireSpread/blob/main/logos/logo3.png)
 
 
 
