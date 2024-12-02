@@ -166,4 +166,4 @@ checkpoints/
 saved_models/
 dataset/
 out_shapefiles/
-out_plots/
+output_plots/

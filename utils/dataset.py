@@ -30,7 +30,9 @@ class BurnedAreaDataset(Dataset):
                 'ssrd',
                 't2m', 
                 'tp',
-                'wind_direction',
+                #'wind_direction',
+                'wind_direction_sin',
+                'wind_direction_cos',
                 'wind_speed'
             ]
 

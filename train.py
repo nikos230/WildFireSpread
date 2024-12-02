@@ -113,13 +113,13 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         avg_iou = epoch_iou / len(train_loader)
         avg_recall = epoch_recall / len(train_loader)
         avg_auroc = epoch_auroc / len(train_loader)
-        #wandb.log({"Train Loss": avg_loss, "Train Dice Coefficient": avg_dice, "Train F1 Score": avg_f1,
-        #           "Train IoU": avg_iou, "Train Recall": avg_recall, "Train AUROC": avg_auroc, "epoch": epoch})
+        wandb.log({"Train Loss": avg_loss, "Train Dice Coefficient": avg_dice, "Train F1 Score": avg_f1,
+                   "Train IoU": avg_iou, "Train Recall": avg_recall, "Train AUROC": avg_auroc, "epoch": epoch})
         print(f'Epoch [{epoch}/{num_epochs}], Loss: {avg_loss:.4f}, Dice Coefficient: {avg_dice:.4f}, f1 Score: {avg_f1:.4f}, iou: {avg_iou:.4f}, auroc: {avg_auroc:.4f}')
         
         # save model chackpoint
         checkpoint_path = os.path.join(checkpoints, f'model_epoch{epoch+1}.pth')
-        #torch.save(model.state_dict(), checkpoint_path)
+        torch.save(model.state_dict(), checkpoint_path)
 
         # validate the model on validation set
         model.eval()
@@ -154,15 +154,14 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         avg_validation_iou = validation_iou / len(validation_loader)
         avg_validation_recall = validation_recall / len(validation_loader)
         avg_validation_auroc = validation_auroc / len(validation_loader)
-        #wandb.log({"Validation Loss": avg_validation_loss, "Validation Dice Coefficient": avg_validation_dice, 
-        #           "Validation F1 Score": avg_validation_f1, "Validation IoU": avg_validation_iou, 
-         #          "Validation Recall": avg_validation_recall, "Validation AUROC": avg_validation_auroc, "epoch": epoch})
+        wandb.log({"Validation Loss": avg_validation_loss, "Validation Dice Coefficient": avg_validation_dice, 
+                   "Validation F1 Score": avg_validation_f1, "Validation IoU": avg_validation_iou, 
+                   "Validation Recall": avg_validation_recall, "Validation AUROC": avg_validation_auroc, "epoch": epoch})
         print(f'Validation Loss: {avg_validation_loss:.4f}, Validation Dice Coefficient: {avg_validation_dice:.4f}, f1 Score: {avg_validation_f1:.4f}, iou: {avg_validation_iou:.4f}, auroc: {avg_validation_auroc:.4f}\n')
         
 
 if __name__ == '__main__':
     os.system("clear")
-    #wandb.init(project="WildFireSpread", config=train_config)
 
     with open('WildFireSpread/WildFireSpread_UNet3D/configs/train_test_config.yaml', 'r') as t_config:
         train_config = yaml.safe_load(t_config)
@@ -176,6 +175,7 @@ if __name__ == '__main__':
         countries_config = yaml.safe_load(c_config)
     c_config.close()
     
+    wandb.init(project="WildFireSpread", config=train_config)
 
     dataset_path      = dataset_config['dataset']['corrected_dataset_path']
     validation_years  = dataset_config['samples']['validation_years']
@@ -249,10 +249,10 @@ if __name__ == '__main__':
         burned_area_ratio = 0    
 
     # config and model to wandb
-    #wandb.config.update({"dataset_path": dataset_path, "checkpoints": checkpoints, "num_filters": num_filters,
-    #                     "kernel_size": kernel_size, "pool_size": pool_size, "use_batchnorm": use_batchnorm,
-    #                     "final_activation": final_activation, "num_epochs": num_epochs, "batch_size": batch_size,
-    #                     "learning_rate": learing_rate, "drop_out_rate": drop_out_rate})
+    wandb.config.update({"dataset_path": dataset_path, "checkpoints": checkpoints, "num_filters": num_filters,
+                         "kernel_size": kernel_size, "pool_size": pool_size, "use_batchnorm": use_batchnorm,
+                         "final_activation": final_activation, "num_epochs": num_epochs, "batch_size": batch_size,
+                         "learning_rate": learing_rate, "drop_out_rate": drop_out_rate})
 
     print(f'Currect settings for traing: \n Train dataset path: {dataset_path} \n Checkpoints save path: {checkpoints} \n Number of filters: {num_filters} \n Kernel Size: {kernel_size} \n Pool Size: {pool_size} \n Use Batchnoorm: {use_batchnorm} \n Final Activation: {final_activation} \n Number of Epochs: {num_epochs} \n Batch Size: {batch_size} \n Learing Rate: {learing_rate} \n Drop out Rate: {drop_out_rate} \n Threshold: {threshold} \n Number of Layers (ConvBlock): {num_layers} \n')
     

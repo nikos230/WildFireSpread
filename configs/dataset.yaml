@@ -1,6 +1,6 @@
 dataset:
   dataset_path:               'WildFireSpread/WildFireSpread_UNet3D/dataset/dataset_64_64_all'                             # path to dataset as produced by create_dataset.py 
-  corrected_dataset_path:     '/home/n.anastasiou/nvme1/n.anastasiou/dataset_64_64_all_corrected_with_countries_new'       # path to corrcted (final) dataset (containing .nc files)
+  corrected_dataset_path:     '/home/n.anastasiou/nvme1/n.anastasiou/dataset_corrected_new'       # path to corrcted (final) dataset (containing .nc files)
   reference_dims:             "{'y': 64, 'x': 64, 'time': 7}"                                                              # reference dimension from script dataset_extraction.py
   world_countries_bounds:     'WildFireSpread/WildFireSpread_UNet3D/world_shapefile/world-administrative-boundaries.shp'
 
@@ -19,7 +19,7 @@ samples:
   exclude_countries_from_val:   ''        # exclude some countries from set validation, leave empty if none
   exlude_countries_from_test:   ''        # exclude some countries from test set, leave empty if none
 
-  bunred_area_bigger_than:     '800'      # use samples only with area greater than a number in ha
+  bunred_area_bigger_than:     'None'      # use samples only with area greater than a number in ha
   burned_area_ratio:           'None'     # range 0 to 1, percentage of big fires over small ones, set to 'None' to use all available samples 
  
 

@@ -1,12 +1,12 @@
 model:
-  num_filters:       '[8, 16, 32, 64]'                                                   # number of filters in encoder and decoder blocks ( [64, 128, 256] )
+  num_filters:       '[64, 128, 256]'                                                   # number of filters in encoder and decoder blocks ( [64, 128, 256] )
   kernel_size:       '(5, 3, 3)'                                                   # kernel size (filter size) 3x3x3, 5x3x3, 5x5x5, should be time, height, width
   pool_size:         '(1, 2, 2)'                                                   # downscale time, height, width dimensions
   use_batchnorm:     'True'                                                        # normalize after convolution block with ReLU
   final_activation:  'None'                                                        # apply activation function in output (nn.Sigmoid), leave null and use in activation in test.py
-  checkpoints:       'WildFireSpread/WildFireSpread_UNet3D/checkpoints'            # path to save model checkpoints after each epoch
+  checkpoints:       'WildFireSpread/WildFireSpread_UNet3D/checkpoints/'            # path to save model checkpoints after each epoch
   threshold:         '0.5'                                                         # threshold for metrics calculation (default 0.5)
-  num_layers:        '4'                                                           # number of layers inside the convolution blocks
+  num_layers:        '5'                                                           # number of layers inside the convolution blocks
   drop_out_rate:     '0.6'                                                         # drop out rate
 
 training: 

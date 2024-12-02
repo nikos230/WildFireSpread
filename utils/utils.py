@@ -39,8 +39,11 @@ def load_files_train_(dataset_path, years, countries, burned_area_big, burned_ar
                 path_to_file = os.path.join(country_path, new_file)
 
                 ds = xr.open_dataset(path_to_file)
+                
                 if ds.attrs['burned_area_ha'] < burned_area_big:
                     continue
+                #if int(ds.attrs['date'].split('-')[1]) >= 6 and int(ds.attrs['date'].split('-')[1]) <= 8:
+                ds.close()
                 files.append(new_file)
 
     #files = [item for sublist in files for item in sublist]
