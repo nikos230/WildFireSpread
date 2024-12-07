@@ -35,8 +35,19 @@ All Samples UNet3D model is using tensor shape (time, channels, height, width) =
 
 ### Visualiasion of Test Results
 ---
-Using the test dataset, which is year 2021 and 2022, below are show some results in binary classification and some from QGIS, binary classification is converted to Shapefile and visualised using QGIS and Google Maps as a Basemap.
+Using the test dataset, which is year 2021 and 2022, below are show some results in binary classification and some from QGIS, binary classification is converted to Shapefile and visualised using QGIS and Google Maps as a Basemap. <br /> <br />
 
+ - Red is the Ground Truth and Black box is the Prediction by UNet3D trained in All Samples (2006 to 2000), Green Points are the ignition points.
+
+<img src="https://github.com/nikos230/WildFireSpread/blob/main/screenshots/Picture2.png">  <br /> <br />
+
+- Binary Classification results
+
+<img src="https://github.com/nikos230/WildFireSpread/blob/main/screenshots/Screenshot_2.jpg">
+
+
+## Contact
+For more info contact in email : nikolas619065@gmail.com <br /><br /><br />
 
 ### Dataset Variables, Spatial resolution and Sources
 
