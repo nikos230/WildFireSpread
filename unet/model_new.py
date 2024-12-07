@@ -63,14 +63,14 @@ class UNet3D(nn.Module):
         layers = []
         
         # Add the first convolutional layer
-        layers.append(nn.Conv3d(in_channels, out_channels, kernel_size=self.kernel_size, padding=(2, 1, 1)))
+        layers.append(nn.Conv3d(in_channels, out_channels, kernel_size=self.kernel_size, padding=(1, 1, 1)))
         if self.use_batchnorm:
             layers.append(nn.BatchNorm3d(out_channels))
         layers.append(nn.ReLU(inplace=True))
         
         # Add subsequent convolutional layers (num_layers - 1 times)
         for _ in range(num_layers - 1):
-            layers.append(nn.Conv3d(out_channels, out_channels, kernel_size=self.kernel_size, padding=(2, 1, 1)))
+            layers.append(nn.Conv3d(out_channels, out_channels, kernel_size=self.kernel_size, padding=(1, 1, 1)))
             if self.use_batchnorm:
                 layers.append(nn.BatchNorm3d(out_channels))
             layers.append(nn.ReLU(inplace=True))

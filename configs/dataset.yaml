@@ -1,15 +1,15 @@
 dataset:
   dataset_path:               'WildFireSpread/WildFireSpread_UNet3D/dataset/dataset_64_64_all'                             # path to dataset as produced by create_dataset.py 
-  corrected_dataset_path:     '/home/n.anastasiou/nvme1/n.anastasiou/dataset_corrected_new'       # path to corrcted (final) dataset (containing .nc files)
+  corrected_dataset_path:     '/home/n.anastasiou/nvme1/n.anastasiou/dataset_corrected_new'                                # path to corrcted (final) dataset (containing .nc files)
   reference_dims:             "{'y': 64, 'x': 64, 'time': 7}"                                                              # reference dimension from script dataset_extraction.py
   world_countries_bounds:     'WildFireSpread/WildFireSpread_UNet3D/world_shapefile/world-administrative-boundaries.shp'
 
 
 
 samples:
-  train_years:                 'all'     # define train years, use 'all' to use all available years except from validation and test years. Example: '2006, 2007, 2008'
-  validation_years:            '2019'     # define in which years the model will be validated on while training
-  test_years:                  '2020'     # define test years for the final evaluation of model, available years 2006 - 2022
+  train_years:                 'all'      # define train years, use 'all' to use all available years except from validation and test years. Example: '2006, 2007, 2008'
+  validation_years:            '2021'     # define in which years the model will be validated on while training
+  test_years:                  '2022'     # define test years for the final evaluation of model, available years 2006 - 2022
   
   train_countries:             'all'      # use 'all' to include samples from all countries available else define which countries to train on. Example: 'Greece, Italy, Algeria'
   validation_countries:        'all'      # use 'all' to test on all available countries else define in which to test on
@@ -19,7 +19,7 @@ samples:
   exclude_countries_from_val:   ''        # exclude some countries from set validation, leave empty if none
   exlude_countries_from_test:   ''        # exclude some countries from test set, leave empty if none
 
-  bunred_area_bigger_than:     'None'      # use samples only with area greater than a number in ha
+  bunred_area_bigger_than:     'None'     # use samples only with area greater than a number in ha
   burned_area_ratio:           'None'     # range 0 to 1, percentage of big fires over small ones, set to 'None' to use all available samples 
  
 

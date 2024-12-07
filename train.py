@@ -7,7 +7,7 @@ from utils.dataset import BurnedAreaDataset
 from unet.model_new import UNet3D
 #from unet.model_new_attension import UNet3D
 from unet.loss import FocalLoss, IoULoss, BCEIoULoss, BCEDiceLoss, F1ScoreLoss
-from utils.utils import dice_coefficient,  f1_score, accuracy, iou, recall, auroc, load_files, load_files_train, load_files_train_, load_files_validation
+from utils.utils import dice_coefficient,  f1_score, accuracy, iou, recall, auroc, precision, load_files, load_files_train, load_files_train_, load_files_validation
 import os
 import numpy as np
 import yaml
@@ -78,10 +78,11 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         epoch_loss     = 0
         epoch_dice     = 0
         epoch_f1       = 0
-        #epoch_accuracy = 0
+        epoch_accuracy = 0
         epoch_iou      = 0
         epoch_recall   = 0
         epoch_auroc    = 0
+        epoch_precision = 0
 
         for inputs, labels in train_loader:
             #print(inputs[0])
@@ -101,35 +102,41 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
             epoch_loss += loss.item()
             epoch_dice += dice_coefficient(outputs, labels, threshold).item()
             epoch_f1   += f1_score(outputs, labels, threshold).item()
-            #epoch_accuracy += accuracy(outputs, labels, threshold).item()
+            epoch_accuracy += accuracy(outputs, labels, threshold).item()
             epoch_iou += iou(outputs, labels, threshold).item()
             epoch_recall += recall(outputs, labels, threshold).item()
             epoch_auroc += auroc(outputs, labels).item()
+            epoch_precision += precision(outputs, labels, threshold).item()
 
         avg_loss = epoch_loss / len(train_loader)
         avg_dice = epoch_dice / len(train_loader)
         avg_f1   = epoch_f1   / len(train_loader)
-        #avg_accuracy = epoch_accuracy / len(train_loader)
+        avg_accuracy = epoch_accuracy / len(train_loader)
         avg_iou = epoch_iou / len(train_loader)
         avg_recall = epoch_recall / len(train_loader)
         avg_auroc = epoch_auroc / len(train_loader)
+        avg_precision = epoch_precision / len(train_loader)
+
         wandb.log({"Train Loss": avg_loss, "Train Dice Coefficient": avg_dice, "Train F1 Score": avg_f1,
-                   "Train IoU": avg_iou, "Train Recall": avg_recall, "Train AUROC": avg_auroc, "epoch": epoch})
+                   "Train IoU": avg_iou, "Train Recall": avg_recall, "Train AUROC": avg_auroc, "Train Precision": avg_precision, "Train Accuracy": avg_accuracy, "epoch": epoch})
+                   
         print(f'Epoch [{epoch}/{num_epochs}], Loss: {avg_loss:.4f}, Dice Coefficient: {avg_dice:.4f}, f1 Score: {avg_f1:.4f}, iou: {avg_iou:.4f}, auroc: {avg_auroc:.4f}')
         
         # save model chackpoint
         checkpoint_path = os.path.join(checkpoints, f'model_epoch{epoch+1}.pth')
-        torch.save(model.state_dict(), checkpoint_path)
+        #torch.save(model.state_dict(), checkpoint_path)
 
         # validate the model on validation set
         model.eval()
         validation_loss = 0
         validation_dice = 0
         validation_f1   = 0
-        #validation_accuracy = 0
+        validation_accuracy = 0
         validation_iou = 0
         validation_recall = 0
         validation_auroc = 0
+        validation_precision = 0
+
         with torch.no_grad():
             for inputs, labels in validation_loader:
                 inputs = inputs.to(device)
@@ -142,21 +149,25 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
                 validation_loss += loss.item()
                 validation_dice += dice_coefficient(outputs, labels, threshold).item()
                 validation_f1   += f1_score(outputs, labels, threshold).item()
-                #validation_accuracy += accuracy(outputs, labels, threshold).item()
+                validation_accuracy += accuracy(outputs, labels, threshold).item()
                 validation_iou += iou(outputs, labels, threshold).item()
                 validation_recall += recall(outputs, labels, threshold).item()
                 validation_auroc += auroc(outputs, labels).item()
+                validation_precision += precision(outputs, labels, threshold).item()
 
         avg_validation_loss = validation_loss / len(validation_loader)
         avg_validation_dice = validation_dice / len(validation_loader)
         avg_validation_f1   = validation_f1   / len(validation_loader)
-        #avg_validation_accuracy = validation_accuracy / len(validation_loader)
+        avg_validation_accuracy = validation_accuracy / len(validation_loader)
         avg_validation_iou = validation_iou / len(validation_loader)
         avg_validation_recall = validation_recall / len(validation_loader)
         avg_validation_auroc = validation_auroc / len(validation_loader)
+        avg_validation_precision = validation_precision / len(validation_loader)
+
         wandb.log({"Validation Loss": avg_validation_loss, "Validation Dice Coefficient": avg_validation_dice, 
                    "Validation F1 Score": avg_validation_f1, "Validation IoU": avg_validation_iou, 
-                   "Validation Recall": avg_validation_recall, "Validation AUROC": avg_validation_auroc, "epoch": epoch})
+                   "Validation Recall": avg_validation_recall, "Validation AUROC": avg_validation_auroc, "Validation Accuracy": avg_accuracy, "Validation Precision": avg_validation_precision, "epoch": epoch})
+
         print(f'Validation Loss: {avg_validation_loss:.4f}, Validation Dice Coefficient: {avg_validation_dice:.4f}, f1 Score: {avg_validation_f1:.4f}, iou: {avg_validation_iou:.4f}, auroc: {avg_validation_auroc:.4f}\n')
         
 

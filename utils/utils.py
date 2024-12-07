@@ -167,4 +167,29 @@ def auroc(preds, targets, num_classes=2):
 
     return auroc_value
 
+
+def precision(preds, targets, threshold=0.5, smooth=1e-6):
+    """
+    Compute the precision metric.
+
+    Args:
+        preds (torch.Tensor): Predicted logits or probabilities.
+        targets (torch.Tensor): Ground truth binary labels.
+        threshold (float): Threshold for converting probabilities to binary predictions. Defaults to 0.5.
+        smooth (float): Small value to avoid division by zero. Defaults to 1e-6.
+
+    Returns:
+        float: The computed precision value.
+    """
+    preds = torch.sigmoid(preds)  # Apply sigmoid activation to convert logits to probabilities
+    preds = (preds > threshold).float()  # Convert probabilities to binary predictions
+    preds = preds.view(-1)
+    targets = targets.view(-1)
+
+    tp = (preds * targets).sum().float()  # True positives
+    fp = (preds * (1 - targets)).sum().float()  # False positives
+
+    precision_value = (tp + smooth) / (tp + fp + smooth)  # Precision calculation
+    return precision_value    
+
     

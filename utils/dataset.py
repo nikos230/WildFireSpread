@@ -14,21 +14,21 @@ class BurnedAreaDataset(Dataset):
     def load_data(self):
         for file in self.nc_files:
             sample = xr.open_dataset(file)
-           # sample = sample.isel(time=slice(3, None)) # remove last day (from 6 to 5)
+            #sample = sample.isel(time=slice(2, None)) # remove last day (from 6 to 5)
             #print('test')
 
             dynamic_vars = [
                 'd2m', 
                 'ignition_points', 
-                'lai', 
+                #'lai', 
                 'lst_day', 
-                'lst_night',
+                #'lst_night',
                 'ndvi', 
                 'rh', 
-                'smi', 
-                'sp', 
-                'ssrd',
-                't2m', 
+                #'smi', 
+                #'sp', 
+                #'ssrd',
+                #'t2m', 
                 'tp',
                 #'wind_direction',
                 'wind_direction_sin',
@@ -37,19 +37,19 @@ class BurnedAreaDataset(Dataset):
             ]
 
             static_vars = [
-                'aspect',
-                'curvature',
+                #'aspect',
+                #'curvature',
                 'dem', 
                 #'roads_distance',
                 'slope',
-                'lc_agriculture',
+                #'lc_agriculture',
                 'lc_forest', 
-                'lc_grassland', 
-                'lc_settlement',
-                'lc_shrubland', 
-                'lc_sparse_vegetation',
+                #'lc_grassland', 
+                #'lc_settlement',
+                #'lc_shrubland', 
+                #'lc_sparse_vegetation',
                 'lc_water_bodies',
-                'lc_wetland', 
+                #'lc_wetland', 
                 #'population'
             ]
 
