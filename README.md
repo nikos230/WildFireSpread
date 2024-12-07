@@ -8,7 +8,7 @@ This project is part of my Thesis and makes use of [mesogeos](https://github.com
 
 ### Dataset
 ---
-Training and Testing of the Models have been done with [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) dataset. Training data (and validation) are 28 variables in 64x64km paches and a Spatial Resolution of 1 pixel = 1kmx1km in netCDF format. The mesogeos DataCube has 1km x 1km x 1 day Spatial and Temporal resolution. <br /> <br />
+Training and Testing of the Models have been done with [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) dataset. Training data (and validation) are 28 variables in 64x64km paches and a Spatial Resolution of 1 pixel = 1km x 1km in netCDF format. The mesogeos DataCube has 1km x 1km x 1 day Spatial and Temporal resolution. <br /> <br />
 The Samples from the DataCube have 64km x 64km x 7days resoltuion, for every fire event there is a 64 x 64km patch around the fire with a random offset so the burned area is not always in the middle of the patch, and for every sample there are 7 days in total, 5 before the fire started and 2 days after. Samples are from the mesogeos region and includes 9500 samples from 31 countries and from years 2006 to 2022. <br /><br />
 
 
