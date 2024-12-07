@@ -4,18 +4,18 @@
 
 ## About The Project
 A Machine Learning ready Dataset and Model to predict final burned area. <br /> <br /> 
-This project is part of my Thesis and makes use of [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) Dataset and a UNET model to predict final burned area from 28 remote sensing variables, Models such as UNet2D and UNet3D have been tested with spatial and temporal data and results are presented below. 
+This project is part of my Thesis and makes use of [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) Dataset and a UNET model to predict final burned area from 28 remote sensing variables, Models such as UNet2D and UNet3D have been tested with spatial and temporal data and results are presented below.<br /><br /> 
 
 ### Dataset
--------------
+---
 Training and Testing of the Models have been done with [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) dataset. Training data (and validation) are 28 variables in 64x64km paches and a Spatial Resolution of 1 pixel = 1kmx1km in netCDF format. The mesogeos DataCube has 1km x 1km x 1 day Spatial and Temporal resolution. <br /> <br />
-The Samples from the DataCube have 64km x 64km x 7days resoltuion, for every fire event there is a 64 x 64km patch around the fire with a random offset so the burned area is not always in the middle of the patch, and for every sample there are 7 days in total, 5 before the fire started and 2 days after. Samples are from the mesogeos region and includes 9500 samples from 31 countries and from years 2006 to 2022.
+The Samples from the DataCube have 64km x 64km x 7days resoltuion, for every fire event there is a 64 x 64km patch around the fire with a random offset so the burned area is not always in the middle of the patch, and for every sample there are 7 days in total, 5 before the fire started and 2 days after. Samples are from the mesogeos region and includes 9500 samples from 31 countries and from years 2006 to 2022. <br /><br />
 
 
 ### Machine Learning Models
 ---
 This project makes use of UNet2D and UNet3D models, the main difference in UNet3D is the 3D convolution which takes into account the temporal information of the samples as the 3D convolution can get info from 3 or more days at once, the 2D convolution is good for spartial feature extraction but not for temporal feature extraction. <br />
-In Feature work the Dataset will be tested on a Vision Transformer (ViT) and results will be published.
+In Feature work the Dataset will be tested on a Vision Transformer (ViT) and results will be published. <br /><br />
 
 
 ### Models Evaluation and Metrics (latest results December 2024)
@@ -31,7 +31,7 @@ A baseline UNet2D is trained on only the fire day and then with all samples mean
 
 <br />Baseline model is using tesnor shape (channels, height, width) = (27, 64, 74) <br />
 All Samples models are using tensor shape (channels, height, width) = (117, 64, 64) <br />
-All Samples UNet3D model is using tensor shape (time, channels, height, width) = (7 , 27, 64, 64) <br />
+All Samples UNet3D model is using tensor shape (time, channels, height, width) = (7 , 27, 64, 64) <br /> <br />
 
 ### Visualiasion of Test Results
 ---
