@@ -1,5 +1,5 @@
 ![Atl text](https://github.com/nikos230/WildFireSpread/blob/main/logos/logo3.png)<br /> <br /> 
-(work in progress... as of December 2024)
+(work in progress... as of January 2025)
 
 
 ## About The Project
