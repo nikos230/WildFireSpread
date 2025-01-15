@@ -6,7 +6,7 @@ import glob
 import xarray as xr
 
 def normalize_data(data):
-    # Normalize data to [0, 1]
+    # data to [0, 1]
     data = (data - np.min(data)) / (np.max(data) - np.min(data) + 1e-8)
     return data
 
@@ -113,8 +113,8 @@ def accuracy(preds, targets, threshold=0.5):
     preds = torch.sigmoid(preds)  # Apply sigmoid to convert logits to probabilities
     preds = (preds > threshold).float()  # Convert probabilities to binary predictions
     correct = (preds == targets).float()  # Compare predictions to actual targets
-    accuracy = correct.sum() / len(correct)  # Calculate accuracy as mean of correct predictions
-    return accuracy
+    accuracy = correct.sum() / correct.numel()  # Calculate accuracy as mean of correct predictions
+    return accuracy 
 
 def iou(preds, targets, threshold=0.5, smooth=1e-6):
     preds = torch.sigmoid(preds)  # Apply sigmoid activation to convert logits to probabilities
@@ -142,17 +142,6 @@ def recall(preds, targets, threshold=0.5, smooth=1e-6):
 
 
 def auroc(preds, targets, num_classes=2):
-    """
-    Compute the Area Under the Receiver Operating Characteristic Curve (AUROC).
-
-    Args:
-        preds (torch.Tensor): Predicted logits or probabilities.
-        targets (torch.Tensor): Ground truth binary labels.
-        num_classes (int): Number of classes. Defaults to 2 (binary classification).
-
-    Returns:
-        auroc_value: The computed AUROC value.
-    """
     preds = torch.sigmoid(preds)  # Apply sigmoid to convert logits to probabilities
 
     # Set the appropriate task for AUROC
@@ -169,18 +158,6 @@ def auroc(preds, targets, num_classes=2):
 
 
 def precision(preds, targets, threshold=0.5, smooth=1e-6):
-    """
-    Compute the precision metric.
-
-    Args:
-        preds (torch.Tensor): Predicted logits or probabilities.
-        targets (torch.Tensor): Ground truth binary labels.
-        threshold (float): Threshold for converting probabilities to binary predictions. Defaults to 0.5.
-        smooth (float): Small value to avoid division by zero. Defaults to 1e-6.
-
-    Returns:
-        float: The computed precision value.
-    """
     preds = torch.sigmoid(preds)  # Apply sigmoid activation to convert logits to probabilities
     preds = (preds > threshold).float()  # Convert probabilities to binary predictions
     preds = preds.view(-1)

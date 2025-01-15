@@ -81,8 +81,9 @@ def get_metadata(ds, world_bound):
     km_per_degree = 111 # auto einai sxedon lathos na to tsekarw kapoia mera
     total_burned_area = total_burned_area * (km_per_degree**2) * 100 # se ha
 
+
     if total_burned_area > 100000000:
-        print('opa re')
+        print('found too big burned area!')
         exit()
 
 
@@ -137,6 +138,24 @@ def create_final_dataset(root_dataset, corrcted_dataset, reference_dims, world_b
             ds.attrs['date'] = date
             ds.attrs['burned_area_ha'] = total_burned_area
             
+            # add u, v vectors
+            wind_direction = ds['wind_direction']
+            wind_direction_sin = np.sin(np.deg2rad(wind_direction))
+            wind_direction_cos = np.cos(np.deg2rad(wind_direction))
+
+            # add u, v vectors wind_speed * wind_direction
+            wind_speed = ds['wind_speed']
+            u = wind_speed * wind_direction_cos
+            v = wind_speed * wind_direction_sin
+
+            ds['wind_direction_sin'] = wind_direction_sin
+            ds['wind_direction_cos'] = wind_direction_cos
+
+            ds['u'] = u
+            ds['v'] = v
+
+
+
             # save corrected file
             corrcted_file_path_year = os.path.join(os.path.join(corrcted_dataset, year_folder))
             os.makedirs(corrcted_file_path_year, exist_ok=True)
@@ -156,7 +175,7 @@ def create_final_dataset(root_dataset, corrcted_dataset, reference_dims, world_b
 if __name__ == "__main__":
     os.system('clear')
 
-    with open('WildFireSpread/WildFireSpread_UNet3D/configs/dataset.yaml', 'r') as file:
+    with open('configs/dataset.yaml', 'r') as file:
         config = yaml.safe_load(file)
     file.close()
 

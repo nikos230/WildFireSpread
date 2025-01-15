@@ -80,12 +80,12 @@ def combine_shp(input_folder, out_shapefile):
 if __name__ == '__main__':
     os.system("clear")
 
-    dataset_path = '/home/n.anastasiou/nvme1/n.anastasiou/dataset_corrected_new'
+    dataset_path = '/home/n.anastasiou/nvme1/n.anastasiou/dataset_64_64_all_10days_final'
 
-    years = ['2021', '2022']
+    years = ['2022']
     
-    combine_shp('WildFireSpread/WildFireSpread_UNet2D/Ignition_Points', 'WildFireSpread/WildFireSpread_UNet2D/output_ignition_points/ignition_points.shp')
-    exit()
+    #combine_shp('WildFireSpread/WildFireSpread_UNet2D/Ignition_Points', 'WildFireSpread/WildFireSpread_UNet2D/output_ignition_points/ignition_points.shp')
+    #exit()
     for year in years:
         dataset_path_year = os.path.join(dataset_path, year)
         for country in os.listdir(dataset_path_year):
@@ -99,8 +99,8 @@ if __name__ == '__main__':
                 ignition_point = ds['ignition_points'].values[4]
                 file_name = sample.split('.')[0]
                 
-                os.makedirs('WildFireSpread/WildFireSpread_UNet2D/Ignition_Points', exist_ok=True)
-                mask_to_shapefile_as_points(ignition_point, transform, f'WildFireSpread/WildFireSpread_UNet2D/Ignition_Points/Ignition_Point_{file_name}', '4326', 0.5, sample, -1, country, date, year, 0)
+                os.makedirs('Ignition_Points', exist_ok=True)
+                mask_to_shapefile_as_points(ignition_point, transform, f'Ignition_Points/Ignition_Point_{file_name}', '4326', 0.5, sample, -1, country, date, year, 0)
                 
 
-    combine_shp('WildFireSpread/WildFireSpread_UNet2D/Ignition_Points', 'WildFireSpread/WildFireSpread_UNet2D/output_ignition_points/ignition_points.shp')
+    combine_shp('Ignition_Points', 'output_ignition_points/ignition_points.shp')

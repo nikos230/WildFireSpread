@@ -1,8 +1,8 @@
 dataset:
-  dataset_path:               'WildFireSpread/WildFireSpread_UNet3D/dataset/dataset_64_64_all'                             # path to dataset as produced by create_dataset.py 
-  corrected_dataset_path:     '/home/n.anastasiou/nvme1/n.anastasiou/dataset_corrected_new'                                # path to corrcted (final) dataset (containing .nc files)
-  reference_dims:             "{'y': 64, 'x': 64, 'time': 7}"                                                              # reference dimension from script dataset_extraction.py
-  world_countries_bounds:     'WildFireSpread/WildFireSpread_UNet3D/world_shapefile/world-administrative-boundaries.shp'
+  dataset_path:               '/home/n.anastasiou/nvme1/n.anastasiou/dataset_64_64_all_10days'                             # path to dataset as produced by create_dataset.py 
+  corrected_dataset_path:     '/home/n.anastasiou/nvme1/n.anastasiou/dataset_64_64_all_10days_final'                       # path to corrcted (final) dataset (containing .nc files)
+  reference_dims:             "{'y': 64, 'x': 64, 'time': 10}"                                                             # reference dimension from script dataset_extraction.py
+  world_countries_bounds:     'world_shapefile/world-administrative-boundaries.shp'   # shapefile containing countries boundaries
 
 
 

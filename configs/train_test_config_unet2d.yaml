@@ -1,0 +1,22 @@
+model:
+  num_filters:      '[32]'                                                                     # number of filters in encoder and decoder blocks ( [64, 128, 256] )
+  kernel_size:      '(3, 3)'                                                                   # kernel size (filter size) 3x3x3, 5x3x3, 5x5x5, should be time, height, width
+  pool_size:        '(4, 4)'                                                                   # downscale time, height, width dimensions
+  use_batchnorm:    'True'                                                                     # normalize after convolution block with ReLU
+  final_activation: 'None'                                                                     # apply activation function in output (nn.Sigmoid), leave null and use in activation in test.py
+  checkpoints:      'checkpoints/checkpoints_UNet2D_test'                            # path to save model checkpoints after each epoch
+  threshold:        '0.5'                                                                      # threshold for metrics calculation in validation set (default 0.5)
+  num_layers:       '4'                                                                        # number of layers inside the convolution blocks
+  drop_out_rate:    '0.4'                                                                      # drop out rate
+
+training: 
+  number_of_epochs: '250'           # number of epochs
+  batch_size:       '8'             # how many samples will be procesed in one run (not more than 10, it will run out of vram)
+  learing_rate:     '1e-3'          # learning rate
+
+testing:
+  #checkpoint_path: 'checkpoints/checkpoints_UNet2D_baseline_1day/model_epoch21.pth'  # path for best baseline model checkpoint
+  checkpoint_path:          'checkpoints/checkpoints_UNet2D_10days/model_epoch23.pth'        # path for model 
+
+
+  
