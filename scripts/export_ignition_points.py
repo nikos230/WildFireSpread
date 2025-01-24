@@ -6,6 +6,7 @@ from rasterio.features import shapes
 import geopandas as gpd
 from affine import Affine
 import pandas as pd
+import shutil
 
 
 def get_metadata(ds):
@@ -81,6 +82,9 @@ if __name__ == '__main__':
     os.system("clear")
 
     dataset_path = '/home/n.anastasiou/nvme1/n.anastasiou/dataset_64_64_all_10days_final'
+    output_path = 'output/Ignition_Points'
+
+    os.makedirs(output_path, exist_ok=True)
 
     years = ['2022']
     
@@ -99,8 +103,9 @@ if __name__ == '__main__':
                 ignition_point = ds['ignition_points'].values[4]
                 file_name = sample.split('.')[0]
                 
-                os.makedirs('Ignition_Points', exist_ok=True)
-                mask_to_shapefile_as_points(ignition_point, transform, f'Ignition_Points/Ignition_Point_{file_name}', '4326', 0.5, sample, -1, country, date, year, 0)
+                mask_to_shapefile_as_points(ignition_point, transform, f'{output_path}/Ignition_Point_{file_name}', '4326', 0.5, sample, -1, country, date, year, 0)
                 
 
-    combine_shp('Ignition_Points', 'output_ignition_points/ignition_points.shp')
+    combine_shp(output_path, f'output/test_ignition_points/test_ignition_points.shp')    
+
+    shutil.rmtree(output_path)

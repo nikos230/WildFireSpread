@@ -21,8 +21,19 @@ import geopandas as gpd
 import pandas as pd
 from datetime import datetime
 from shapely.geometry import shape
+import shutil
 
-def test(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_batchnorm, final_activation, drop_out_rate, train_years, validation_years, threshold, num_layers, checkpoint_path, test_countries):
+
+def test(
+    dataset_path, checkpoints,
+    num_filters, kernel_size,
+    pool_size, use_batchnorm, 
+    final_activation, drop_out_rate, 
+    train_years, validation_years, 
+    threshold, num_layers, 
+    checkpoint_path, test_countries,
+    world_bounds, save_results_path
+    ):
     
     # load train and validation files from folders | Dataset and Dataloader
     test_files = load_files(dataset_path, test_years, test_countries)
@@ -124,59 +135,72 @@ def test(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_bat
     print(f'Average IoU Coefficient on Test Set: {avg_iou:.4f}')
     print(f'Average Precision Coefficient on Test Set: {avg_precision:.4f}')
     print(f'Average Recall Coefficient on Test Set: {avg_recall:.4f}')
-    exit()
-    # Plot all predictions, ground truths, and the overlap
+    
+
     num_samples = len(all_predictions)
     n_cols = 3  # 1 for prediction, 1 for ground truth, 1 for overlap
-    n_rows = num_samples
-
-    #fig, axes = plt.subplots(n_rows, n_cols, figsize=(15, 5 * 100))
+    os.makedirs(save_results_path, exist_ok=True)
     
-    world_boundarys = gpd.read_file('world_shapefile/world-administrative-boundaries.shp', engine='pyogrio', use_arrow=True)
+    world_boundarys = gpd.read_file(world_bounds, engine='pyogrio', use_arrow=True)
     
+    # for sample in range(0, 100):
+    #     file_name = os.path.basename(test_files[sample]).split('.')[0]
+    #     plt.imshow(all_predictions[sample], cmap='gray')
+    #     #plt.title()
+    #     plt.grid(False)
+    #     plt.axis('off')
+    #     plt.savefig(f'output_plots/plots/sample_{sample}_{file_name}.png',format='png', dpi=300, transparent=True, bbox_inches='tight', pad_inches=0)
+    # exit()
 
-    for i in range(0, n_rows):
+    fig, axes = plt.subplots(100, n_cols, figsize=(15, 5 * 100))
+
+    for i in range(0, 100):
         file_name = os.path.basename(test_files[i]).split('.')[0]
         # Predicted mask
-        #axes[i, 0].imshow(all_predictions[i], cmap='gray', interpolation='nearest')
-        #axes[i, 0].set_title(f'Sample {i+1} - Predicted Mask, File: {file_name}')
+        axes[i, 0].imshow(all_predictions[i], cmap='gray', interpolation='nearest')
+        axes[i, 0].set_title(f'Sample {i+1} - Predicted Mask, File: {file_name}')
 
         # Ground Truth mask
-        #axes[i, 1].imshow(all_ground_truths[i], cmap='gray', interpolation='nearest')
-        #axes[i, 1].set_title(f'Sample {i+1} - Ground Truth Mask')
+        axes[i, 1].imshow(all_ground_truths[i], cmap='gray', interpolation='nearest')
+        axes[i, 1].set_title(f'Sample {i+1} - Ground Truth Mask')
 
         # Overlay of prediction and ground truth with transparency
-        #axes[i, 2].imshow(all_ground_truths[i], cmap='Greens', interpolation='nearest', alpha=0.5)
-        #axes[i, 2].imshow(all_predictions[i], cmap='Reds', interpolation='nearest', alpha=0.5)
-        #axes[i, 2].set_title(f'Sample {i+1} - Overlap (Prediction & Label)')
+        axes[i, 2].imshow(all_ground_truths[i], cmap='Greens', interpolation='nearest', alpha=0.5)
+        axes[i, 2].imshow(all_predictions[i], cmap='Reds', interpolation='nearest', alpha=0.5)
+        axes[i, 2].set_title(f'Sample {i+1} - Overlap (Prediction & Label)')
 
+    for ax in axes[i]:
+        ax.axis('off')
+    
+    os.makedirs(save_results_path, exist_ok=True)
+    output_path = f'{save_results_path}/UNet3D_test_results.png'
+    plt.savefig(output_path)
+    plt.close() 
+    print(f'Saved visualization of test samples (with overlap) to {output_path}')
+
+
+    for i in range(0, num_samples):
+        file_name = os.path.basename(test_files[i]).split('.')[0]
         transform, country, date, year, burned_area_ha = get_metadata(xr.open_dataset(test_files[i]))
-        #print(burned_area_ha)
-        # Save predicted mask as shapefile
-        predicted_shapefile = f'out_shapefiles/predicted_shapefiles/{file_name}_predicted.shp'
-        os.makedirs('out_shapefiles/predicted_shapefiles', exist_ok=True)  # Create directory if not exists
+
+        predicted_shapefile = f'{save_results_path}/predicted_all_shapefiles/{file_name}_predicted.shp'
+        os.makedirs(f'{save_results_path}/predicted_all_shapefiles', exist_ok=True)  # Create directory if not exists
         
         mask_to_shapefile(all_predictions[i], transform, predicted_shapefile, '4326', threshold, file_name, all_dice[i], country, date, year, 0)
         
-        # Save ground truth mask as shapefile
-        ground_truth_shapefile = f'out_shapefiles/groud_truth_shapefiles/{file_name}_ground_truth.shp'
-        os.makedirs('out_shapefiles/groud_truth_shapefiles', exist_ok=True)  # Create directory if not exists
+        ground_truth_shapefile = f'{save_results_path}/groud_truth_all_shapefiles/{file_name}_ground_truth.shp'
+        os.makedirs(f'{save_results_path}/groud_truth_all_shapefiles', exist_ok=True)  # Create directory if not exists
         mask_to_shapefile(all_ground_truths[i], transform, ground_truth_shapefile, '4326', threshold, file_name, all_dice[i], country, date, year, burned_area_ha)
 
-        #for ax in axes[i]:
-            #ax.axis('off')  # Hide axis
 
-    #plt.tight_layout()
 
-    # Save the figure with all results
-    output_path = 'output_plots/test_results_with_overlap.png'
-    #plt.savefig(output_path)
-    plt.close()  # Close the figure to free up memory
 
-    print(f'Saved visualization of test samples (with overlap) to {output_path}')
+    combine_shp(f'{save_results_path}/groud_truth_all_shapefiles', f'{save_results_path}/ground_truth_combined/ground_truth_combined.shp')
+    combine_shp(f'{save_results_path}/predicted_all_shapefiles', f'{save_results_path}/predicted_combined/predicted_combined.shp')
+    
+    shutil.rmtree(f'{save_results_path}/groud_truth_all_shapefiles/')
+    shutil.rmtree(f'{save_results_path}/predicted_all_shapefiles/')
 
-    combine_shp('out_shapefiles/groud_truth_shapefiles', 'out_shapefiles/ground_truth_combined/ground_truth_combined.shp')
-    combine_shp('out_shapefiles/predicted_shapefiles', 'out_shapefiles/predicted_combined/predicted_combined.shp')
     print('Saved Shapefiles!')
 
 
@@ -266,22 +290,24 @@ if __name__ == '__main__':
     c_config.close()
 
 
-    dataset_path     = dataset_config['dataset']['corrected_dataset_path']
-    validation_years = dataset_config['samples']['validation_years']
+    dataset_path      = dataset_config['dataset']['corrected_dataset_path']
+    world_bounds      = dataset_config['dataset']['world_countries_bounds']
+    validation_years  = dataset_config['samples']['validation_years']
     train_years       = dataset_config['samples']['train_years']
-    test_years       = dataset_config['samples']['test_years']
-    test_countries   = dataset_config['samples']['test_countries']
-    ex_count_test    = dataset_config['samples']['exlude_countries_from_test']
-    checkpoints      = train_config['model']['checkpoints']
-    num_filters      = train_config['model']['num_filters']
-    kernel_size      = train_config['model']['kernel_size']
-    pool_size        = train_config['model']['pool_size']
-    use_batchnorm    = train_config['model']['use_batchnorm']
-    final_activation = train_config['model']['final_activation']
-    num_layers       = train_config['model']['num_layers']
-    threshold        = train_config['model']['threshold']
-    drop_out_rate    = train_config['model']['drop_out_rate']
-    checkpoint_path  = train_config['testing']['checkpoint_path']
+    test_years        = dataset_config['samples']['test_years']
+    test_countries    = dataset_config['samples']['test_countries']
+    ex_count_test     = dataset_config['samples']['exlude_countries_from_test']
+    checkpoints       = train_config['model']['checkpoints']
+    num_filters       = train_config['model']['num_filters']
+    kernel_size       = train_config['model']['kernel_size']
+    pool_size         = train_config['model']['pool_size']
+    use_batchnorm     = train_config['model']['use_batchnorm']
+    final_activation  = train_config['model']['final_activation']
+    num_layers        = train_config['model']['num_layers']
+    threshold         = train_config['model']['threshold']
+    drop_out_rate     = train_config['model']['drop_out_rate']
+    checkpoint_path   = train_config['testing']['checkpoint_path']
+    save_results_path = train_config['testing']['save_results_path']
 
    
 
@@ -323,4 +349,13 @@ if __name__ == '__main__':
 
     
     
-    test(dataset_path, checkpoints, ast.literal_eval(num_filters), ast.literal_eval(kernel_size), ast.literal_eval(pool_size), bool(use_batchnorm), ast.literal_eval(final_activation), float(drop_out_rate), train_years, validation_years, float(threshold), int(num_layers), checkpoint_path, test_countries)
+    test(
+        dataset_path, checkpoints, 
+        ast.literal_eval(num_filters), ast.literal_eval(kernel_size), 
+        ast.literal_eval(pool_size), bool(use_batchnorm), 
+        ast.literal_eval(final_activation), float(drop_out_rate),
+        train_years, validation_years,
+        float(threshold), int(num_layers),
+        checkpoint_path, test_countries, 
+        world_bounds, save_results_path
+        )

@@ -1,15 +1,37 @@
 import os
 import xarray as xr
-
+from datetime import datetime
+import pandas as pd
 
 
 if __name__ == '__main__':
     os.system("clear")
 
-    dataset_path = '/home/n.anastasiou/nvme1/n.anastasiou/dataset_64_64_all_corrected_with_countries'
+    dataset_path = '/home/n.anastasiou/nvme1/n.anastasiou/dataset_64_64_all_10days_final'
 
-    country_dict = {}
-    cnt = 0
+
+    fire_size = pd.DataFrame(columns=['sample', 'index', 'ha'])
+
+
+    months = {
+            'January':   {'index': 1,  'count': 0},
+            'February':  {'index': 2,  'count': 0},
+            'March':     {'index': 3,  'count': 0},
+            'April':     {'index': 4,  'count': 0},
+            'May':       {'index': 5,  'count': 0},
+            'June':      {'index': 6,  'count': 0},
+            'July':      {'index': 7,  'count': 0},
+            'August':    {'index': 8,  'count': 0},
+            'September': {'index': 9,  'count': 0},
+            'October':   {'index': 10, 'count': 0},
+            'November':  {'index': 11, 'count': 0},
+            'December':  {'index': 12, 'count': 0}
+            }
+
+    country_dict = {}      # get samples per country
+    year_dict = {}         # get samples per year
+    number_of_samples = 0  # count all samples
+
     for year in os.listdir(dataset_path):
         dataset_path_year = os.path.join(dataset_path, year)
         for country in os.listdir(dataset_path_year):
@@ -17,11 +39,42 @@ if __name__ == '__main__':
             for sample in os.listdir(dataset_path_year_country):
 
                 ds = xr.open_dataset(os.path.join(dataset_path_year_country, sample))
+
                 country = ds.attrs['country']
+                date = ds.attrs['date']
+                date = datetime.strptime(date, '%Y-%m-%d')
+                year = date.year
+                month = date.month
+                burned_area_ha = int(ds.attrs['burned_area_ha'])
+
+                # get samples per country
                 if country in country_dict:
                     country_dict[country] += 1
-                    cnt += 1
+                    number_of_samples += 1
                 else:
                     country_dict[country] = 1
-                    cnt += 1 
-    print(country_dict, cnt)
+                    number_of_samples += 1 
+
+                # get samples per year
+                if year in year_dict:
+                    year_dict[year] += 1
+                else:
+                    year_dict[year] = 1
+
+                # get samples per month
+                for month_ in months:
+                    if months[month_]['index'] == month:
+                        months[month_]['count'] += 1
+
+                # store burned area for later use, ['sample', 'index', 'ha']
+                fire_size.loc[number_of_samples] = [sample, number_of_samples, burned_area_ha]
+
+                ds.close()
+
+                
+    fire_size.to_csv('test_fire_size.csv')
+
+    print(f'Samples per Country: {country_dict}')
+    print(f'Samples per Year: {year_dict}')
+    print(f'Samples per Month: {months}')
+    print(f'Number of Total Samples: {number_of_samples}')
