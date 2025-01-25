@@ -3,7 +3,7 @@ import netCDF4 as nc
 import xarray as xr 
 import matplotlib.pyplot as plt
 
-output  = 'output_plots'
+output  = 'output/visualise_samples'
 sample  = '/home/n.anastasiou/nvme1/n.anastasiou/dataset_64_64_all_10days_final/2022/France/corrected_sample_10636.nc'
 
 os.makedirs(output, exist_ok=True)
@@ -18,7 +18,7 @@ data = ds['burned_areas']
 day4_ignition_points = ds['ignition_points'].isel(time=4)
 ds['ignition_points'].values[:] = 0 
 
-ds['ignition_points'].values[4 :, :] = day4_ignition_points
+ds['ignition_points'].values[4, :, :] = day4_ignition_points
 
 #data2 = data.isel(time=slice(4, None))
 #print(data2.data_vars)
@@ -27,12 +27,12 @@ data2 = data.isel(time=4)
 
 plt.figure(figsize=(3, 3))
 #data2.plot(cmap='gray')
-plt.imshow(data2, cmap='gray')
+plt.imshow(ds['ignition_points'].values[6], cmap='gray')
 #plt.title('test')
 plt.axis('off')
 plt.savefig(output + '/' + 'test.png', dpi=300, transparent=True, bbox_inches='tight', pad_inches=0)
 plt.close()
-#exit()
+exit()
 
 for variable in ds.data_vars:
     if variable == 'burned_areas' or variable == 'ignition_points' or variable == 'spatial_ref':

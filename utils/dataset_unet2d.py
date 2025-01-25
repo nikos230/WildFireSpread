@@ -60,7 +60,7 @@ class BurnedAreaDataset(Dataset):
             day4_ignition_points = sample['ignition_points'].isel(time=4)
             sample['ignition_points'][:] = 0 
 
-            sample['ignition_points'].values[4 :, :] = day4_ignition_points
+            sample['ignition_points'].values[4, :, :] = day4_ignition_points
 
             inputs = [] # list to put dynamic and static variables from sample
             # get dynamic variables from sample .nc file

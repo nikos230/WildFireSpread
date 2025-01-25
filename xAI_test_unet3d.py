@@ -155,34 +155,34 @@ def test(
         total_recall += recall_
 
         # Apply sigmoid activation to get probabilities
-        preds = torch.sigmoid(outputs)
-        preds = preds.cpu().numpy()[0, 0]  # Shape: (height, width)
-        targets = targets.cpu().numpy()[0, 0]  # Shape: (height, width)
+        #preds = torch.sigmoid(outputs)
+        #preds = preds.cpu().numpy()[0, 0]  # Shape: (height, width)
+        #targets = targets.cpu().numpy()[0, 0]  # Shape: (height, width)
 
         # Optional: Threshold the predictions to get binary masks
-        binary_preds = (preds > threshold).astype(np.uint8)
+        #binary_preds = (preds > threshold).astype(np.uint8)
 
         # Collect predictions and ground truths for visualization
-        all_predictions.append(binary_preds)
-        all_ground_truths.append(targets)
-        all_dice.append(dice)
+        #all_predictions.append(binary_preds)
+        #all_ground_truths.append(targets)
+        #all_dice.append(dice)
 
 
 
-    avg_dice = total_dice / len(test_loader)
-    avg_accuracy = total_accuracy / len(test_loader)
-    avg_f1_score = total_f1_score / len(test_loader)
-    avg_iou = total_iou / len(test_loader)
-    avg_precision = total_precision / len(test_loader)
-    avg_recall = total_recall / len(test_loader)
+    # avg_dice = total_dice / len(test_loader)
+    # avg_accuracy = total_accuracy / len(test_loader)
+    # avg_f1_score = total_f1_score / len(test_loader)
+    # avg_iou = total_iou / len(test_loader)
+    # avg_precision = total_precision / len(test_loader)
+    # avg_recall = total_recall / len(test_loader)
 
 
-    print(f'Average Dice Coefficient on Test Set: {avg_dice:.4f}')
-    print(f'Average Accuracy Coefficient on Test Set: {avg_accuracy:.4f}')
-    print(f'Average f1 Score Coefficient on Test Set: {avg_f1_score:.4f}')
-    print(f'Average IoU Coefficient on Test Set: {avg_iou:.4f}')
-    print(f'Average Precision Coefficient on Test Set: {avg_precision:.4f}')
-    print(f'Average Recall Coefficient on Test Set: {avg_recall:.4f}')
+    # print(f'Average Dice Coefficient on Test Set: {avg_dice:.4f}')
+    # print(f'Average Accuracy Coefficient on Test Set: {avg_accuracy:.4f}')
+    # print(f'Average f1 Score Coefficient on Test Set: {avg_f1_score:.4f}')
+    # print(f'Average IoU Coefficient on Test Set: {avg_iou:.4f}')
+    # print(f'Average Precision Coefficient on Test Set: {avg_precision:.4f}')
+    # print(f'Average Recall Coefficient on Test Set: {avg_recall:.4f}')
  
 
    

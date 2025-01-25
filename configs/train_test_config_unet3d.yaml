@@ -4,7 +4,7 @@ model:
   pool_size:         '(1, 4, 4)'                                              # downscale time, height, width dimensions
   use_batchnorm:     'True'                                                   # normalize after convolution block with ReLU
   final_activation:  'None'                                                   # apply activation function in output (nn.Sigmoid), leave none and use in test.py
-  checkpoints:       'checkpoints/checkpoints_UNet3D_10days_test'             # path to save model checkpoints after each epoch
+  checkpoints:       'checkpoints/checkpoints_UNet3D_10days'                  # path to save model checkpoints after each epoch
   threshold:         '0.5'                                                    # threshold for metrics calculation (default 0.5)
   num_layers:        '4'                                                      # number of layers inside the convolution blocks
   drop_out_rate:     '0.5'                                                    # drop out rate
@@ -18,6 +18,6 @@ training:
 testing:
   checkpoint_path:   'checkpoints/checkpoints_UNet3D_10days/model_epoch38.pth'   # best model path
   save_results_path: 'output/output_UNet3D'                                      # path for saving test results (binary predictions and shapefiles)
-  xAI_save_path:     'output/xAI/UNet3D'                                         # path tosave saliency maps 
+  xAI_save_path:     'output/xAI/UNet3D'                                         # path to save saliency maps 
 
 
