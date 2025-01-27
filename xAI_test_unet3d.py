@@ -20,6 +20,8 @@ import geopandas as gpd
 import pandas as pd
 from datetime import datetime
 from shapely.geometry import shape
+import imageio
+
 
 def test(
         dataset_path, checkpoints,
@@ -131,7 +133,7 @@ def test(
         save_saliency_map(idx, saliency, dynamic_vars, static_vars, targets, inputs, xAI_save_path)
 
         if cnt == 2:
-            print('test')
+            print('Done maps for 3 samples')
             exit(2)
         cnt += 1    
 
@@ -139,20 +141,20 @@ def test(
         model.zero_grad()  # Clear model parameters' gradients
         inputs.grad = None
     
-        dice = dice_coefficient(outputs, targets, threshold=threshold).item()
-        accuracy_ = accuracy(outputs, targets, threshold=threshold).item()
-        f1_score_ = f1_score(outputs, targets, threshold=threshold).item()
-        iou_ = iou(outputs, targets, threshold=threshold).item()
-        precision_ = precision(outputs, targets, threshold=threshold).item()
-        recall_ = recall(outputs, targets, threshold=threshold).item()
+        # dice = dice_coefficient(outputs, targets, threshold=threshold).item()
+        # accuracy_ = accuracy(outputs, targets, threshold=threshold).item()
+        # f1_score_ = f1_score(outputs, targets, threshold=threshold).item()
+        # iou_ = iou(outputs, targets, threshold=threshold).item()
+        # precision_ = precision(outputs, targets, threshold=threshold).item()
+        # recall_ = recall(outputs, targets, threshold=threshold).item()
 
 
-        total_dice += dice
-        total_accuracy += accuracy_
-        total_f1_score += f1_score_
-        total_iou += iou_
-        total_precision += precision_
-        total_recall += recall_
+        # total_dice += dice
+        # total_accuracy += accuracy_
+        # total_f1_score += f1_score_
+        # total_iou += iou_
+        # total_precision += precision_
+        # total_recall += recall_
 
         # Apply sigmoid activation to get probabilities
         #preds = torch.sigmoid(outputs)
@@ -191,15 +193,24 @@ def save_saliency_map(idx, saliency_maps, dynamic_vars, static_vars, targets, in
     # saliency_maps shape [batch_size, channel, time_step, height, width]
     all_variables_names = dynamic_vars + static_vars
     path_to_maps = f'{xAI_save_path}/sample_{idx}'
+    path_to_maps_nc = f'{xAI_save_path}/sample_{idx}_tif'
+
     os.makedirs(path_to_maps, exist_ok=True)
+    os.makedirs(path_to_maps_nc, exist_ok=True)
 
     for time_step in range(0, saliency_maps.shape[2]):
         for variable in range(0, saliency_maps.shape[1]):
             day = 'day_' + str(time_step+1)
             path_to_map = os.path.join(path_to_maps, day)
+            path_to_map_nc = os.path.join(path_to_maps_nc, day)
             os.makedirs(path_to_map, exist_ok=True)
+            os.makedirs(path_to_map_nc, exist_ok=True)
 
             variable_saliency = saliency_maps[0, variable, time_step].cpu().detach().numpy()
+
+            # save netcdf saliency map
+            imageio.imwrite(f'{path_to_map_nc}/saliency_map_{all_variables_names[variable]}.tif', variable_saliency)
+
 
             variable_image = inputs[0, variable, time_step].cpu().detach().numpy()
             plt.imshow(variable_image, cmap='gray')

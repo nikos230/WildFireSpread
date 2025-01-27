@@ -33,6 +33,7 @@ if __name__ == "__main__":
     plt.xlabel('Years', fontsize=8)
     plt.xticks(fontsize=7, color='black', rotation=0)
     plt.ylabel('Number of samples', fontsize=8)
+    plt.yticks(fontsize=7.5)
     plt.grid(axis='y', linestyle=':', linewidth=0.5, color='gray', zorder=1)
     plt.text(-0.5, 1350, 'Total number of Samples: 9568', fontsize=6)
     plt.tight_layout()
@@ -47,6 +48,7 @@ if __name__ == "__main__":
     plt.xlabel('Months', fontsize=8)
     plt.xticks(fontsize=7, color='black', rotation=30)
     plt.ylabel('Number of samples', fontsize=8)
+    plt.yticks(fontsize=7.5)
     plt.grid(axis='y', linestyle=':', linewidth=0.5, color='gray', zorder=1)
     plt.tight_layout()
 
@@ -59,7 +61,7 @@ if __name__ == "__main__":
 
 
     df_countries['percentage'] = df_countries.apply(calc_percentage, axis=1)
-
+    
     print(df_countries)
     
 

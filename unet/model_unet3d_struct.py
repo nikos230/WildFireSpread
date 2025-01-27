@@ -35,7 +35,6 @@ class UNet3D_struct(nn.Module):
             nn.Conv3d(out_channels, out_channels, kernel_size=3, padding=1),
             nn.BatchNorm3d(out_channels),
             nn.GELU(),
-           # nn.Dropout3d(p=0.4),
             nn.Conv3d(out_channels, out_channels, kernel_size=3, padding=1),
             nn.BatchNorm3d(out_channels),
             nn.GELU(),

@@ -51,22 +51,22 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
     input_channels = train_dataset[0][0].shape[0] # get input from input_tensor
     output_channels = 1 # binary classification
 
-    # model = UNet3D(
-    #     in_channels=input_channels,
-    #     out_channels=output_channels, 
-    #     num_filters=num_filters, 
-    #     kernel_size=kernel_size, 
-    #     pool_size=pool_size, 
-    #     use_batchnorm=use_batchnorm, 
-    #     final_activation=final_activation,
-    #     dropout_rate=drop_out_rate,
-    #     num_layers=num_layers
-    #     )
-
-    model = UNet3D_struct(
+    model = UNet3D(
         in_channels=input_channels,
         out_channels=output_channels, 
-        )  
+        num_filters=num_filters, 
+        kernel_size=kernel_size, 
+        pool_size=pool_size, 
+        use_batchnorm=use_batchnorm, 
+        final_activation=final_activation,
+        dropout_rate=drop_out_rate,
+        num_layers=num_layers
+        )
+
+    # model = UNet3D_struct(
+    #     in_channels=input_channels,
+    #     out_channels=output_channels, 
+    #     )  
          
 
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -134,7 +134,7 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         
         # save model chackpoint
         checkpoint_path = os.path.join(checkpoints, f'model_epoch{epoch+1}.pth')
-        #torch.save(model.state_dict(), checkpoint_path)
+        torch.save(model.state_dict(), checkpoint_path)
 
         # validate the model on validation set
         model.eval()

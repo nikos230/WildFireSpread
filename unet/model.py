@@ -444,6 +444,9 @@ class UNet2D_struct(nn.Module):
 
         self.bottleneck = self.conv_block(32, 64)
 
+        # LSTM Layer (assuming you still want to process it using an LSTM)
+        self.lstm = nn.LSTM(input_size=64, hidden_size=64, num_layers=2, batch_first=True)
+
 
         # Decoder
         self.upconv3 = nn.ConvTranspose2d(64, 32, kernel_size=(4, 4), stride=(4, 4))
@@ -472,9 +475,6 @@ class UNet2D_struct(nn.Module):
             nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
             nn.BatchNorm2d(out_channels),
             nn.GELU(),
-            nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1),
-            nn.BatchNorm2d(out_channels),
-            nn.GELU(),
             nn.Dropout2d(p=0.4)
         )
 
@@ -492,10 +492,19 @@ class UNet2D_struct(nn.Module):
         # Bottleneck
         b = self.bottleneck(pool1)
 
-  
+        # LSTM processing (reshape the input to fit LSTM format: [batch, seq, feature])
+        batch_size, channels, height, width = b.size()
+        b = b.view(batch_size, channels, -1).transpose(1, 2)  # Reshape to [batch_size, seq_len, feature_size] for LSTM
+
+        # Pass through LSTM layer
+        lstm_out, (hn, cn) = self.lstm(b)  # Output of LSTM is (batch_size, seq_len, hidden_size)
+
+        # Correcting the output dimensions: ensure that the channels are 128 (as expected by the upconv3 layer)
+        lstm_out = lstm_out[:, -1, :].unsqueeze(2).unsqueeze(3)  # Take the last time-step, add spatial dims
+        lstm_out = lstm_out.expand(-1, -1, height, width)  # Expand to match spatial dimensions
 
         # Decoder path
-        upconv3 = self.upconv3(b)
+        upconv3 = self.upconv3(lstm_out)
         dec3 = torch.cat([upconv3, enc1], dim=1)
         dec3 = self.dec3(dec3)
 

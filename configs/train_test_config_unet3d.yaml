@@ -10,13 +10,13 @@ model:
   drop_out_rate:     '0.5'                                                    # drop out rate
 
 training: 
-  number_of_epochs:  '130'       # number of epochs
+  number_of_epochs:  '60'        # number of epochs
   batch_size:        '8'         # how many samples will be procesed in one run (not more than 10, it will run out of vram)
   learing_rate:      '1e-3'      # learning rate
 
 
 testing:
-  checkpoint_path:   'checkpoints/checkpoints_UNet3D_10days/model_epoch38.pth'   # best model path
+  checkpoint_path:   'checkpoints/checkpoints_UNet3D_10days/model_epoch49.pth'   # best model path
   save_results_path: 'output/output_UNet3D'                                      # path for saving test results (binary predictions and shapefiles)
   xAI_save_path:     'output/xAI/UNet3D'                                         # path to save saliency maps 
 
