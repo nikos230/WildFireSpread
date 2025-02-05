@@ -61,7 +61,7 @@ def get_metadata(ds, world_bound):
 
     # get fire day date and year
     times = ds['time'].values
-    date = np.datetime64(times[4]) # 5 days before and 2 after (with fire day inside)
+    date = np.datetime64(times[4]) # 5 days before and 5 after (with fire day inside)
 
     year = date.astype('datetime64[Y]').item().year
     date = str(date).split('T')[0]     

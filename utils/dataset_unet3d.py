@@ -14,8 +14,10 @@ class BurnedAreaDataset(Dataset):
     def load_data(self):
         for file in self.nc_files:
             sample = xr.open_dataset(file)
-            #sample = sample.isel(time=slice(4, None)) 
-            
+            #sample = sample.isel(time=slice(None, 6)) 
+
+            #print(sample)
+            #exit()
 
             dynamic_vars = [
                 'd2m', 
@@ -63,36 +65,55 @@ class BurnedAreaDataset(Dataset):
 
             sample['ignition_points'].values[4, :, :] = day4_ignition_points
             
-
+            #cnt = 0
             inputs = [] # list to put dynamic and static variables from sample
             # get dynamic variables from sample .nc file
             for variable in dynamic_vars:
                 data_array = sample[variable].values
                 inputs.append(data_array)
+                #print(variable, cnt)
+                #cnt += 1
 
             # get static variables from sample .nc file
             for variable in static_vars:
                 data_array = sample[variable].values
                 data_array = np.repeat(data_array[np.newaxis, :, :], time_steps, axis=0)
                 inputs.append(data_array)
+                #print(variable, cnt)
+                #cnt += 1
 
             # put all varibles into a tensor
             input_tensor = np.stack(inputs, axis=0)    
             #print(input_tensor[0][0].shape)
             # normazise data, each channel individually
             for channel in range(input_tensor.shape[0]):
-                if channel == 'wind_direction_sin' or channel == 'wind_direction_cos':
-                    continue
-                if channel == 'u' or channel == 'v':
-                    continue
-                channel_data = input_tensor[channel]
-                data_min = np.nanmin(channel_data)
-                data_max = np.nanmax(channel_data)
-                if data_max - data_min > 0:
-                    input_tensor[channel] = (channel_data - data_min) / (data_max - data_min)
-                else:
-                    # same values all over the channel
-                    input_tensor[channel] = np.zeros_like(channel_data)    
+                # na ftia3w auto https://stackoverflow.com/questions/78008066/negative-values-in-normalized-data
+                if channel == 12 or channel == 13:
+                    channel_data = input_tensor[channel]
+                    min_value = channel_data.min()
+                    channel_data = channel_data + abs(min_value)
+
+                    data_min = np.nanmin(channel_data)
+                    data_max = np.nanmax(channel_data)
+
+                    if data_max - data_min > 0:
+                        input_tensor[channel] = (channel_data - data_min) / (data_max - data_min)
+                    else:
+                        # same values all over the channel
+                        input_tensor[channel] = input_tensor[channel]#np.zeros_like(channel_data)
+                    
+                else:    
+                    #print(channel)
+                    
+                    channel_data = input_tensor[channel]
+                    data_min = np.nanmin(channel_data)
+                    data_max = np.nanmax(channel_data)
+                    if data_max - data_min > 0:
+                        input_tensor[channel] = (channel_data - data_min) / (data_max - data_min)
+                    else:
+                        # same values all over the channel
+                        input_tensor[channel] = input_tensor[channel]#np.zeros_like(channel_data)   
+                     
 
             # check for nan's and inf in input_tensor
             if np.isnan(input_tensor).any() or np.isinf(input_tensor).any():

@@ -4,6 +4,7 @@ import torchmetrics
 import os
 import glob
 import xarray as xr
+from sklearn.metrics import roc_auc_score
 
 def normalize_data(data):
     # data to [0, 1]
@@ -41,6 +42,7 @@ def load_files_train_(dataset_path, years, countries, burned_area_big, burned_ar
                 ds = xr.open_dataset(path_to_file)
                 
                 if ds.attrs['burned_area_ha'] < burned_area_big:
+                    ds.close()
                     continue
                 #if int(ds.attrs['date'].split('-')[1]) >= 6 and int(ds.attrs['date'].split('-')[1]) <= 8:
                 ds.close()
@@ -65,6 +67,30 @@ def load_files_validation(dataset_path, years, countries):
     files = [item for sublist in files for item in sublist]
 
     return files   
+
+
+
+def load_files_test_(dataset_path, years, countries, burned_area_big, burned_area_ratio):
+    # load train or validation set
+    files = []
+    for year in years:
+        year_path = os.path.join(dataset_path, year)
+        for country in countries:
+            country_path = os.path.join(year_path, country)
+            new_files = glob.glob(country_path + '/*.nc')
+            for new_file in new_files:
+                path_to_file = os.path.join(country_path, new_file)
+
+                ds = xr.open_dataset(path_to_file)
+                
+                if ds.attrs['burned_area_ha'] < burned_area_big:
+                    ds.close()
+                    continue
+
+                ds.close()
+                files.append(new_file)
+
+    return files 
 
 
 
@@ -167,6 +193,15 @@ def precision(preds, targets, threshold=0.5, smooth=1e-6):
     fp = (preds * (1 - targets)).sum().float()  # False positives
 
     precision_value = (tp + smooth) / (tp + fp + smooth)  # Precision calculation
-    return precision_value    
+    return precision_value   
+
+
+
+def auc_score(preds, targets):
+    preds = torch.sigmoid(preds).detach().cpu().numpy().flatten()  # Convert logits to probabilities
+    #preds = preds.view(-1)
+    targets = targets.detach().cpu().numpy().flatten()
+
+    return roc_auc_score(targets, preds)  # Compute AUC score     
 
     

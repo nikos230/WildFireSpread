@@ -12,37 +12,37 @@ from shapely.wkt import loads
 if __name__ == '__main__':
     os.system('clear')
 
-    shapefile_path = 'mesogeos/ml_tracks/b.final_burned_area/burned_areas_shapefile/med_burned_areas_updated.shp'
+    shapefile_path = 'hdd1/n.anastasiou/mesogeos/ml_tracks/b.final_burned_area/burned_areas_shapefile/med_burned_areas_updated.shp'
     
     gf = gpd.read_file(shapefile_path, engine='pyogrio', use_arrow=True)
 
-    # start_date = gf['IGNITION_D']
-    # end_date = gf['LAST_DATE']
+    start_date = gf['IGNITION_D']
+    end_date = gf['LAST_DATE']
     
-    # start_date = pd.to_datetime(start_date)
-    # end_date = pd.to_datetime(end_date)
+    start_date = pd.to_datetime(start_date)
+    end_date = pd.to_datetime(end_date)
     
-    # # select year 2006 to 2022
-    # start_date = start_date[start_date >= pd.Timestamp('2006-01-01')]
-    # end_date = end_date[end_date >= pd.Timestamp('2006-01-01')]
+    # select year 2006 to 2022
+    start_date = start_date[start_date >= pd.Timestamp('2006-01-01')]
+    end_date = end_date[end_date >= pd.Timestamp('2006-01-01')]
     
 
-    # diff = end_date - start_date
+    diff = end_date - start_date
 
-    # days = diff.dt.days
-    # days = days[days <= 10]
+    days = diff.dt.days
+    days = days[days <= 10]
     
-    # plt.hist(days, bins=days.max(), edgecolor='black')
-    # plt.title('')
-    # plt.xlabel('Duration of Fire in Days')
-    # plt.ylabel('Number of Fires')
-    # plt.xticks(range(0, days.max() + 1))
-    # plt.savefig('WildFireSpread/WildFireSpread_UNet3D/output_plots/histogram.png', dpi=600)
+    plt.hist(days, bins=days.max(), edgecolor='black')
+    plt.title('')
+    plt.xlabel('Duration of fire in Days', fontsize=8)
+    plt.ylabel('Number of fires', fontsize=8)
+    plt.xticks(range(0, days.max() + 1))
+    plt.savefig('hdd1/n.anastasiou/WildFireSpread/WildFireSpread_UNet3D/output/histogram.png', dpi=300, bbox_inches='tight', pad_inches=0.1)
 
-
+    exit()
 
     # create histogram for extracted dataset
-    dataset_path = '/home/n.anastasiou/nvme1/n.anastasiou/dataset_corrected_new'
+    dataset_path = 'nvme1/n.anastasiou/dataset_64_64_all_10days_final'
 
     # ignition points from burned areas shapefile
     #ignition_points = gf['geometry_h']

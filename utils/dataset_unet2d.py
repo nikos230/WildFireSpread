@@ -92,18 +92,29 @@ class BurnedAreaDataset(Dataset):
             #print(input_tensor[0][0].shape)
             # normazise data, each channel individually
             for channel in range(input_tensor.shape[0]):
-                if channel == 'wind_direction_sin' or channel == 'wind_direction_cos':
-                    continue
-                if channel == 'u' or channel == 'v':
-                    continue
-                channel_data = input_tensor[channel]
-                data_min = np.nanmin(channel_data)
-                data_max = np.nanmax(channel_data)
-                if data_max - data_min > 0:
-                    input_tensor[channel] = (channel_data - data_min) / (data_max - data_min)
+                if channel == 12 or channel == 13:
+                    channel_data = input_tensor[channel]
+                    min_value = channel_data.min()
+                    channel_data = channel_data + abs(min_value)
+
+                    data_min = np.nanmin(channel_data)
+                    data_max = np.nanmax(channel_data)
+
+                    if data_max - data_min > 0:
+                        input_tensor[channel] = (channel_data - data_min) / (data_max - data_min)
+                    else:
+                        # same values all over the channel
+                        input_tensor[channel] = input_tensor[channel]#np.zeros_like(channel_data)
+
                 else:
-                    # same values all over the channel
-                    input_tensor[channel] = np.zeros_like(channel_data)    
+                    channel_data = input_tensor[channel]
+                    data_min = np.nanmin(channel_data)
+                    data_max = np.nanmax(channel_data)
+                    if data_max - data_min > 0:
+                        input_tensor[channel] = (channel_data - data_min) / (data_max - data_min)
+                    else:
+                        # same values all over the channel
+                        input_tensor[channel] = np.zeros_like(channel_data)    
 
             # check for nan's and inf in input_tensor
             if np.isnan(input_tensor).any() or np.isinf(input_tensor).any():

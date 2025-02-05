@@ -16,6 +16,8 @@ import wandb
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from tqdm import tqdm
+from torch.optim.lr_scheduler import StepLR, ReduceLROnPlateau
+
 
 def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_batchnorm, final_activation, num_epochs, batch_size, learing_rate, drop_out_rate, train_years, validation_years, threshold, num_layers, train_countries, val_countries, burned_area_big, burned_area_ratio):
     # make checkpoints folder if not exist
@@ -50,22 +52,22 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
     input_channels = train_dataset[0][0].shape[0] # get input from input_tensor
     output_channels = 1 # binary classification
 
-    # model = UNet2D(
-    #     in_channels=input_channels,
-    #     out_channels=output_channels, 
-    #     num_filters=num_filters, 
-    #     kernel_size=kernel_size, 
-    #     pool_size=pool_size, 
-    #     use_batchnorm=use_batchnorm, 
-    #     final_activation=final_activation,
-    #     dropout_rate=drop_out_rate,
-    #     num_layers=num_layers
-    #     )
-
-    model = UNet2D_struct(
+    model = UNet2D(
         in_channels=input_channels,
         out_channels=output_channels, 
+        num_filters=num_filters, 
+        kernel_size=kernel_size, 
+        pool_size=pool_size, 
+        use_batchnorm=use_batchnorm, 
+        final_activation=final_activation,
+        dropout_rate=drop_out_rate,
+        num_layers=num_layers
         )
+
+    # model = UNet2D_struct(
+    #     in_channels=input_channels,
+    #     out_channels=output_channels, 
+    #     )
 
 
 
@@ -115,7 +117,7 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
     # )     
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model= nn.DataParallel(model)
+    model = nn.DataParallel(model)
     print(device)
     model.to(device)
 
@@ -127,6 +129,7 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
     #criterion = BCEIoULoss()
     #optimizer = optim.Adam(model.parameters(), lr=learing_rate)#, weight_decay=1e-5)
     optimizer = torch.optim.Adam(model.parameters(), lr=learing_rate, weight_decay=1e-4)
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=3, verbose=True)
 
 
     #optimizer = torch.optim.AdamW(model.parameters(), lr=learing_rate, weight_decay=1e-3)  # You can tune weight decay
@@ -185,9 +188,9 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         avg_precision = epoch_precision / len(train_loader)
 
         wandb.log({"Train Loss": avg_loss, "Train Dice Coefficient": avg_dice, "Train F1 Score": avg_f1,
-                   "Train IoU": avg_iou, "Train Recall": avg_recall, "Train AUROC": avg_auroc, "Train Precision": avg_precision, "Train Accuracy": avg_accuracy, "epoch": epoch})
+                   "Train IoU": avg_iou, "Train Recall": avg_recall, "Train AUROC": avg_auroc, "Train Precision": avg_precision, "Train Accuracy": avg_accuracy, "epoch": epoch+1})
 
-        print(f'Epoch [{epoch}/{num_epochs}], Loss: {avg_loss:.4f}, Dice Coefficient: {avg_dice:.4f}, f1 Score: {avg_f1:.4f}, iou: {avg_iou:.4f}, auroc: {avg_auroc:.4f}')
+        print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {avg_loss:.4f}, Dice Coefficient: {avg_dice:.4f}, f1 Score: {avg_f1:.4f}, iou: {avg_iou:.4f}, auroc: {avg_auroc:.4f}')
         
         # save model chackpoint
         checkpoint_path = os.path.join(checkpoints, f'model_epoch{epoch+1}.pth')
@@ -232,9 +235,13 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         avg_validation_auroc = validation_auroc / len(validation_loader)
         avg_validation_precision = validation_precision / len(validation_loader)
 
+
+        scheduler.step(avg_validation_loss)
+
+
         wandb.log({"Validation Loss": avg_validation_loss, "Validation Dice Coefficient": avg_validation_dice, 
                    "Validation F1 Score": avg_validation_f1, "Validation IoU": avg_validation_iou, 
-                   "Validation Recall": avg_validation_recall, "Validation AUROC": avg_validation_auroc, "Validation Accuracy": avg_accuracy, "Validation Precision": avg_validation_precision, "epoch": epoch})
+                   "Validation Recall": avg_validation_recall, "Validation AUROC": avg_validation_auroc, "Validation Accuracy": avg_accuracy, "Validation Precision": avg_validation_precision, "epoch": epoch+1})
 
         print(f'Validation Loss: {avg_validation_loss:.4f}, Validation Dice Coefficient: {avg_validation_dice:.4f}, f1 Score: {avg_validation_f1:.4f}, iou: {avg_validation_iou:.4f}, auroc: {avg_validation_auroc:.4f}\n')
         
@@ -265,7 +272,7 @@ if __name__ == '__main__':
     ex_count_train    = dataset_config['samples']['exclude_countries_from_train']
     ex_count_val      = dataset_config['samples']['exclude_countries_from_val']
     burned_area_big   = dataset_config['samples']['bunred_area_bigger_than']
-    burned_area_ratio = dataset_config['samples']['burned_area_ratio']
+    burned_area_ratio = 'None'#dataset_config['samples']['burned_area_ratio']
     checkpoints       = train_config['model']['checkpoints']
     num_filters       = train_config['model']['num_filters']
     kernel_size       = train_config['model']['kernel_size']

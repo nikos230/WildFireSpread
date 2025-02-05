@@ -14,6 +14,7 @@ import yaml
 import ast
 import wandb
 from tqdm import tqdm
+from torch.optim.lr_scheduler import StepLR, ReduceLROnPlateau
 
 
 def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_batchnorm, final_activation, num_epochs, batch_size, learing_rate, drop_out_rate, train_years, validation_years, threshold, num_layers, train_countries, val_countries, burned_area_big, burned_area_ratio):
@@ -82,16 +83,17 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
     #criterion = BCEIoULoss()
     optimizer = optim.Adam(model.parameters(), lr=learing_rate, weight_decay=1e-4)
     #optimizer = torch.optim.AdamW(model.parameters(), lr=learing_rate, weight_decay=1e-2)  # You can tune weight decay
+    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(optimizer, 'min', patience=3, verbose=True)
 
     for epoch in range(num_epochs):
         model.train()
-        epoch_loss     = 0
-        epoch_dice     = 0
-        epoch_f1       = 0
-        epoch_accuracy = 0
-        epoch_iou      = 0
-        epoch_recall   = 0
-        epoch_auroc    = 0
+        epoch_loss      = 0
+        epoch_dice      = 0
+        epoch_f1        = 0
+        epoch_accuracy  = 0
+        epoch_iou       = 0
+        epoch_recall    = 0
+        epoch_auroc     = 0
         epoch_precision = 0
 
         for inputs, labels in tqdm(train_loader):
@@ -117,6 +119,7 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
             epoch_recall += recall(outputs, labels, threshold).item()
             epoch_auroc += auroc(outputs, labels).item()
             epoch_precision += precision(outputs, labels, threshold).item()
+
 
         avg_loss = epoch_loss / len(train_loader)
         avg_dice = epoch_dice / len(train_loader)
@@ -174,6 +177,8 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         avg_validation_auroc = validation_auroc / len(validation_loader)
         avg_validation_precision = validation_precision / len(validation_loader)
 
+        scheduler.step(avg_validation_loss)
+
         wandb.log({"Validation Loss": avg_validation_loss, "Validation Dice Coefficient": avg_validation_dice, 
                    "Validation F1 Score": avg_validation_f1, "Validation IoU": avg_validation_iou, 
                    "Validation Recall": avg_validation_recall, "Validation AUROC": avg_validation_auroc, "Validation Accuracy": avg_accuracy, "Validation Precision": avg_validation_precision, "epoch": epoch+1})
@@ -208,7 +213,7 @@ if __name__ == '__main__':
     ex_count_train    = dataset_config['samples']['exclude_countries_from_train']
     ex_count_val      = dataset_config['samples']['exclude_countries_from_val']
     burned_area_big   = dataset_config['samples']['bunred_area_bigger_than']
-    burned_area_ratio = dataset_config['samples']['burned_area_ratio']
+    burned_area_ratio = 'None'#dataset_config['samples']['burned_area_ratio']
     checkpoints       = train_config['model']['checkpoints']
     num_filters       = train_config['model']['num_filters']
     kernel_size       = train_config['model']['kernel_size']

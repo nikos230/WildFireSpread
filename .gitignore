@@ -171,3 +171,7 @@ checkpoints
 checkpoints_UNet3D/
 checkpoints_UNet3D_4days/
 wandb/
+output/
+
+*.tif
+*.gpkg

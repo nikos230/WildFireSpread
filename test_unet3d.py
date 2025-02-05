@@ -3,7 +3,7 @@ from torch.utils.data import DataLoader
 from utils.dataset_unet3d import BurnedAreaDataset
 from unet.model_unet3d import UNet3D
 from unet.model_unet3d_struct import UNet3D_struct
-from utils.utils import dice_coefficient, load_files, f1_score, accuracy, iou, recall, auroc, precision
+from utils.utils import dice_coefficient, load_files, f1_score, accuracy, iou, recall, auroc, precision, load_files_test_, auc_score
 import glob
 import os
 import matplotlib.pyplot as plt
@@ -29,14 +29,19 @@ def test(
     num_filters, kernel_size,
     pool_size, use_batchnorm, 
     final_activation, drop_out_rate, 
-    train_years, validation_years, 
+    test_years, validation_years, 
     threshold, num_layers, 
     checkpoint_path, test_countries,
-    world_bounds, save_results_path
+    world_bounds, save_results_path,
+    burned_area_big
     ):
     
     # load train and validation files from folders | Dataset and Dataloader
-    test_files = load_files(dataset_path, test_years, test_countries)
+    if burned_area_big == 0:
+        test_files = load_files(dataset_path, test_years, test_countries)
+    else:
+        test_files = load_files_test_(dataset_path, test_years, test_countries, burned_area_big, 0)
+
 
     test_dataset = BurnedAreaDataset(test_files)
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
@@ -77,6 +82,7 @@ def test(
     total_iou = 0
     total_precision = 0
     total_recall = 0
+    totoal_auc_score = 0
     
     all_predictions = []
     all_ground_truths = []
@@ -96,6 +102,7 @@ def test(
             iou_ = iou(outputs, targets, threshold=threshold).item()
             precision_ = precision(outputs, targets, threshold=threshold).item()
             recall_ = recall(outputs, targets, threshold=threshold).item()
+            auc_score_ = auc_score(outputs, targets).item()
 
 
             total_dice += dice
@@ -104,6 +111,7 @@ def test(
             total_iou += iou_
             total_precision += precision_
             total_recall += recall_
+            totoal_auc_score += auc_score_
 
             # Apply sigmoid activation to get probabilities
             preds = torch.sigmoid(outputs)
@@ -127,6 +135,7 @@ def test(
     avg_iou = total_iou / len(test_loader)
     avg_precision = total_precision / len(test_loader)
     avg_recall = total_recall / len(test_loader)
+    avg_auc_score = totoal_auc_score / len(test_loader)
 
 
     print(f'Average Dice Coefficient on Test Set: {avg_dice:.4f}')
@@ -135,7 +144,8 @@ def test(
     print(f'Average IoU Coefficient on Test Set: {avg_iou:.4f}')
     print(f'Average Precision Coefficient on Test Set: {avg_precision:.4f}')
     print(f'Average Recall Coefficient on Test Set: {avg_recall:.4f}')
-    
+    print(f'Average AUC Coefficient on Test Set: {avg_auc_score:.4f}')
+    #exit()
 
     num_samples = len(all_predictions)
     n_cols = 3  # 1 for prediction, 1 for ground truth, 1 for overlap
@@ -297,6 +307,7 @@ if __name__ == '__main__':
     test_years        = dataset_config['samples']['test_years']
     test_countries    = dataset_config['samples']['test_countries']
     ex_count_test     = dataset_config['samples']['exlude_countries_from_test']
+    burned_area_big   = dataset_config['samples']['bunred_area_bigger_than']
     checkpoints       = train_config['model']['checkpoints']
     num_filters       = train_config['model']['num_filters']
     kernel_size       = train_config['model']['kernel_size']
@@ -347,15 +358,19 @@ if __name__ == '__main__':
         ex_count_test = ex_count_test[0].split(', ')
         test_countries = list(set(test_countries) - set(ex_count_test))
 
-    
+
+    if burned_area_big == 'None':
+        burned_area_big = 0
+
     
     test(
         dataset_path, checkpoints, 
         ast.literal_eval(num_filters), ast.literal_eval(kernel_size), 
         ast.literal_eval(pool_size), bool(use_batchnorm), 
         ast.literal_eval(final_activation), float(drop_out_rate),
-        train_years, validation_years,
+        test_years, validation_years,
         float(threshold), int(num_layers),
         checkpoint_path, test_countries, 
-        world_bounds, save_results_path
+        world_bounds, save_results_path,
+        int(burned_area_big)
         )

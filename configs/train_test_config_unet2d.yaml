@@ -4,10 +4,10 @@ model:
   pool_size:        '(4, 4)'                                         # downscale time, height, width dimensions
   use_batchnorm:    'True'                                           # normalize after convolution block with ReLU
   final_activation: 'None'                                           # apply activation function in output (nn.Sigmoid), leave null and use in activation in test.py
-  checkpoints:      'checkpoints/checkpoints_UNet2D_10_days'         # path to save model checkpoints after each epoch
+  checkpoints:      'checkpoints/checkpoints_UNet2D_10days'         # path to save model checkpoints after each epoch
   threshold:        '0.5'                                            # threshold for metrics calculation in validation set (default 0.5)
-  num_layers:       '4'                                              # number of layers inside the convolution blocks
-  drop_out_rate:    '0.4'                                            # drop out rate
+  num_layers:       '3'                                              # number of layers inside the convolution blocks
+  drop_out_rate:    '0.5'                                            # drop out rate
 
 training: 
   number_of_epochs: '60'            # number of epochs
@@ -15,10 +15,10 @@ training:
   learing_rate:     '1e-3'          # learning rate
 
 testing:
-  #checkpoint_path:  'checkpoints/checkpoints_UNet2D_baseline_1day/model_epoch21.pth'  # path for best baseline model checkpoint
-  checkpoint_path:   'checkpoints/checkpoints_UNet2D_10_days/model_epoch43.pth'         # path for model 56
-  #save_results_path: 'output/output_UNet2D_baseline'                                            # path for saving test results (binary predictions and shapefiles)
-  save_results_path: 'output/output_UNet2D'                                            # path for saving test results (binary predictions and shapefiles)
+  checkpoint_path:   'checkpoints/checkpoints_UNet2D_10days/model_epoch42.pth'         # path for model best model
+  #checkpoint_path:  'checkpoints/checkpoints_UNet2D_1day_baseline/model_epoch33.pth'  # path for best baseline model checkpoint
+  save_results_path: 'output/UNet2D_10days'                                            # path for saving test results (binary predictions and shapefiles)
+  #save_results_path: 'output/UNet2D_1day_baseline'                                    # path for saving test results (binary predictions and shapefiles)
 
 
   

@@ -7,11 +7,12 @@ import matplotlib.pyplot as plt
 if __name__ == "__main__":
     os.system("clear")
     
-    path_to_tifs = 'output/xAI/UNet3D/sample_0_tif'
+    path_to_tifs = 'output/xAI/UNet3D/sample_corrected_sample_10333_tif'
 
 
     variable_sums = {}
     days_sum = {}
+    ndvi_per_day_sum = {}
 
 
     # take mean value of every saliency map (variables)
@@ -29,19 +30,30 @@ if __name__ == "__main__":
                 variable_data = variable_tif.read(1)
                 
                 # add variable to dictionary if not exists
+                # variable sums
                 if variable_name not in variable_sums:
                     variable_sums[variable_name] = np.zeros_like(variable_data, dtype=np.float64)
+                variable_sums[variable_name] += variable_data
 
+
+
+                # days sum
                 if day not in days_sum:
                     days_sum[day] = np.zeros_like(variable_data, dtype=np.float64)    
-                
                 days_sum[day] += variable_data
 
-                variable_sums[variable_name] += variable_data
+
+                if variable_name == 'saliency_map_ndvi':
+                    # ndvi per day sum
+                    if day not in ndvi_per_day_sum:
+                        ndvi_per_day_sum[day] = np.zeros_like(variable_data, dtype=np.float64)
+                    ndvi_per_day_sum[day] += variable_data
+
                 
                 variable_tif.close()
 
-
+    for day in ndvi_per_day_sum:
+        ndvi_per_day_sum[day] = ndvi_per_day_sum[day].sum()
 
     for variable in variable_sums:
         variable_sums[variable] = variable_sums[variable].sum()
@@ -99,6 +111,24 @@ if __name__ == "__main__":
     plt.tight_layout()
     plt.savefig('output/xAI/plots/xAI_days.png', dpi=300)
     plt.close()
+
+
+    # plot ndvi per day
+    days_values = [ndvi_per_day_sum[day] for day in ndvi_per_day_sum]
+
+    plt.bar(days_names, days_values, color='#1f77b4', zorder=2)
+    plt.locator_params(axis='y', nbins=12)
+    plt.title('Importance of each Day', fontsize=10)
+    plt.xlabel('Days', fontsize=9)
+    plt.xticks(rotation=0)
+    plt.ylabel('Importance', fontsize=9)
+    plt.grid(axis='y', linestyle=':', linewidth=0.5, color='gray', zorder=1)
+
+    os.makedirs('output/xAI/plots', exist_ok=True)
+    plt.tight_layout()
+    plt.savefig('output/xAI/plots/xAI_ndvi_per_day.png', dpi=300)
+    plt.close()
+
 
 
 

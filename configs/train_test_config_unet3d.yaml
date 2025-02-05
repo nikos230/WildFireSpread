@@ -4,20 +4,26 @@ model:
   pool_size:         '(1, 4, 4)'                                              # downscale time, height, width dimensions
   use_batchnorm:     'True'                                                   # normalize after convolution block with ReLU
   final_activation:  'None'                                                   # apply activation function in output (nn.Sigmoid), leave none and use in test.py
-  checkpoints:       'checkpoints/checkpoints_UNet3D_10days'                  # path to save model checkpoints after each epoch
+  checkpoints:       'checkpoints/checkpoints_UNet3D'                         # path to save model checkpoints after each epoch
   threshold:         '0.5'                                                    # threshold for metrics calculation (default 0.5)
-  num_layers:        '4'                                                      # number of layers inside the convolution blocks
+  num_layers:        '3'                                                      # number of layers inside the convolution blocks
   drop_out_rate:     '0.5'                                                    # drop out rate
 
 training: 
-  number_of_epochs:  '60'        # number of epochs
-  batch_size:        '8'         # how many samples will be procesed in one run (not more than 10, it will run out of vram)
-  learing_rate:      '1e-3'      # learning rate
+  number_of_epochs:  '100'        # number of epochs
+  batch_size:        '8'          # how many samples will be procesed in one run (not more than 10, it will run out of vram)
+  learing_rate:      '1e-3'       # initial learning rate
 
 
 testing:
-  checkpoint_path:   'checkpoints/checkpoints_UNet3D_10days/model_epoch49.pth'   # best model path
-  save_results_path: 'output/output_UNet3D'                                      # path for saving test results (binary predictions and shapefiles)
-  xAI_save_path:     'output/xAI/UNet3D'                                         # path to save saliency maps 
+  checkpoint_path:   'checkpoints/checkpoints_UNet3D_10days/model_epoch41.pth'         # best model path | 10 days, 5 before and 5 after the fire
+  #checkpoint_path:   'checkpoints/checkpoints_UNet3D_9days/model_epoch41.pth'         # best model path | 9 days, 5 before and 4 after the fire
+  #checkpoint_path:   'checkpoints/checkpoints_UNet3D_8days/model_epoch31.pth'         # best model path | 8 days, 5 before and 3 after the fire
+  #checkpoint_path:   'checkpoints/checkpoints_UNet3D_7days/model_epoch39.pth'         # best model path | 7 days, 5 before and 2 after the fire
+  #checkpoint_path:   'checkpoints/checkpoints_UNet3D_6days/model_epoch29.pth'         # best model path | 6 days, 5 before and 1 after the fire
+  #checkpoint_path:   'checkpoints/checkpoints_UNet3D_5days_after/model_epoch37.pth'   # best model path | 5 days after fire only (total 6 days)
+  #checkpoint_path:   'checkpoints/checkpoints_UNet3D_test/model_epoch36.pth'          # best model path | 10 days, 5 before and 5 after the fire
+  save_results_path: 'output/UNet3D_10days'                                            # path for saving test results (binary predictions and shapefiles)
+  xAI_save_path:     'output/xAI/UNet3D'                                               # path to save saliency maps 
 
 

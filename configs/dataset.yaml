@@ -20,7 +20,7 @@ samples:
   exlude_countries_from_test:   ''        # exclude some countries from test set, leave empty if none
 
   bunred_area_bigger_than:     'None'     # use samples only with area greater than a number in ha
-  burned_area_ratio:           'None'     # range 0 to 1, percentage of big fires over small ones, set to 'None' to use all available samples 
+  #burned_area_ratio:           'None'     # range 0 to 1, percentage of big fires over small ones, set to 'None' to use all available samples 
  
 
 

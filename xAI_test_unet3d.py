@@ -21,6 +21,7 @@ import pandas as pd
 from datetime import datetime
 from shapely.geometry import shape
 import imageio
+import shap
 
 
 def test(
@@ -87,7 +88,8 @@ def test(
         outputs = model(inputs)
 
         outputs = outputs.mean()
-        outputs.backward()
+        
+        outputs.backward(retain_graph=True)
 
         dynamic_vars = [
             'd2m', 
@@ -127,15 +129,25 @@ def test(
             #'population'
         ]
 
-        saliency = inputs.grad.abs()
+        # salinecy maps explain
 
+        # saliency = inputs.grad.abs()
 
-        save_saliency_map(idx, saliency, dynamic_vars, static_vars, targets, inputs, xAI_save_path)
+        # file_name = os.path.basename(test_files[idx]).split('.')[0]
+        # if file_name == 'corrected_sample_10333':
+        #     save_saliency_map(idx, saliency, dynamic_vars, static_vars, targets, inputs, xAI_save_path, file_name)
+        #     exit()
 
-        if cnt == 2:
-            print('Done maps for 3 samples')
-            exit(2)
-        cnt += 1    
+        # SHAP explain
+        explainer = shap.DeepExplainer(model, inputs)
+        #output_scalar = outputs.mean()
+        #output_scalar = outputs[:, :, outputs.shape[2] // 2, outputs.shape[3] // 2, outputs.shape[4] // 2]
+        shap_values = explainer.shap_values(inputs)
+
+        plt.figure()
+        shap.summary_plot(shap_values, inputs.cpu().numpy(), show=False)  # Disable immediate display
+        plt.savefig(f"{xAI_save_path}/{file_name}_shap_summary.png", dpi=300, bbox_inches="tight")
+        plt.close()
 
 
         model.zero_grad()  # Clear model parameters' gradients
@@ -189,11 +201,11 @@ def test(
 
    
 
-def save_saliency_map(idx, saliency_maps, dynamic_vars, static_vars, targets, inputs, xAI_save_path):
+def save_saliency_map(idx, saliency_maps, dynamic_vars, static_vars, targets, inputs, xAI_save_path, file_name):
     # saliency_maps shape [batch_size, channel, time_step, height, width]
     all_variables_names = dynamic_vars + static_vars
-    path_to_maps = f'{xAI_save_path}/sample_{idx}'
-    path_to_maps_nc = f'{xAI_save_path}/sample_{idx}_tif'
+    path_to_maps = f'{xAI_save_path}/sample_{file_name}'
+    path_to_maps_nc = f'{xAI_save_path}/sample_{file_name}_tif'
 
     os.makedirs(path_to_maps, exist_ok=True)
     os.makedirs(path_to_maps_nc, exist_ok=True)
