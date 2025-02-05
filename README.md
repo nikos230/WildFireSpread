@@ -2,7 +2,6 @@
 (work in progress... as of Feb 2025)
 
 ![Alt text](https://raw.githubusercontent.com/nikos230/WildFireSpread/main/screenshots/dynamic_variables.gif)
-![Alt text](https://raw.githubusercontent.com/nikos230/WildFireSpread/main/screenshots/dynamic_variables_test.gif)
 
 
 ## About The Project
