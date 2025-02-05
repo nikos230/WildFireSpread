@@ -1,39 +1,51 @@
-![Atl text](https://github.com/nikos230/WildFireSpread/blob/main/logos/fire.png)<br /> <br /> 
+<div align="center">
+  <img src="https://raw.githubusercontent.com/nikos230/WildFireSpread/main/logos/fire.png" alt="Fire Logo" />
+</div>
+<br /> 
 (work in progress... as of Feb 2025)
 
-![Alt text](https://raw.githubusercontent.com/nikos230/WildFireSpread/main/screenshots/dynamic_variables.gif)
 
 
-## About The Project
+# About The Project
 A Machine Learning ready Dataset and Model to predict final burned area. <br /> <br /> 
-This project is part of my Thesis and makes use of [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) Dataset and a UNET model to predict final burned area from 28 remote sensing variables, Models such as UNet2D and UNet3D have been tested with spatial and temporal data and results are presented below.<br /><br /> 
+This project is part of my Thesis and makes use of [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) Dataset and UNet models to predict final burned area from 27 remote sensing variables using spatial and temporal data.<br /> <br /> 
+**This project includes** :
+- Deep Learing Models 
+- Dataset with ≈ 9500 samples
+- Tools for model evalution and visualization of results in shapefile form
+- Tools for Dataset statistics extraction
+- Showcase of results
+<br />
 
-### Dataset
----
-Training and Testing of the Models have been done with [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) dataset. Training data (and validation) are 28 variables in 64x64km paches and a Spatial Resolution of 1 pixel = 1km x 1km in netCDF format. The mesogeos DataCube has 1km x 1km x 1 day Spatial and Temporal resolution. <br /> <br />
-The Samples from the DataCube have 64km x 64km x 7days resoltuion, for every fire event there is a 64 x 64km patch around the fire with a random offset so the burned area is not always in the middle of the patch, and for every sample there are 7 days in total, 5 before the fire started and 2 days after. Samples are from the mesogeos region and includes 9500 samples from 31 countries and from years 2006 to 2022. <br /><br />
+## Dataset
+Training and Testing of the Models have been done with [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) Dataset. Training data (and validation) are 27 variables in 64 x 64 km paches and a Spatial Resolution of 1 pixel = 1km x 1km in netCDF format. The mesogeos DataCube has 1km x 1km x 1day Spatial and Temporal resolution of 1 day. <br /> <br />
+The Samples from the DataCube have 64km x 64km x 1day resoltuion, for every fire event there is a 64 x 64km patch around the fire with a random offset so the burned area is not always in the middle of the patch, and for every sample there are 10 days in total, 5 before the fire started and 5 days after. Samples are from the mesogeos region and includes ≈9500 samples from 31 countries and from years 2006 to 2022. <br /><br />
+![Alt text](https://raw.githubusercontent.com/nikos230/WildFireSpread/main/screenshots/dynamic_variables.gif)
+<br /><br />
 
 
-### Machine Learning Models
----
+## Deep Learning Models
 This project makes use of UNet2D and UNet3D models, the main difference in UNet3D is the 3D convolution which takes into account the temporal information of the samples as the 3D convolution can get info from 3 or more days at once, the 2D convolution is good for spartial feature extraction but not for temporal feature extraction. <br />
 In Feature work the Dataset will be tested on a Vision Transformer (ViT) and results will be published. <br /><br />
+<br />
+
+## Models Evaluation and Metrics (latest results Feb 2025)
+The main evaluation metric is the Dice Coefficient, presented below, which shows how much 2 shapes are similar, in this Segmatation Task along with Intersection Over Union (IoU) are the most important metrics.
+A baseline UNet2D is trained on only the fire day and then with all samples meaning using all 10 days each sample has. 
 
 
-### Models Evaluation and Metrics (latest results December 2024)
----
-The main evaluation metric is the Dice Coefficient, presented below, which shows how much 2 shapes are similar, in this Segmatation Task along with Intersection Over Union (IoU) are the most important metrics. Using Samples with 64km x 64km x 7days resolution and training years from 2006 to 2020, validation 2021 (hyperparameters tuning) and 2022 for test the results are shown below. <br /> <br />
-A baseline UNet2D is trained on only the fire day and then with all samples meaning using all 7 days each sample has. 
+| Metrics (%)     | UNet2D<br /> Baseline (1 day) | UNet2D<br />  | UNet3D <br />  |
+|:------------------:|:-----------------------------:|:-------------:|:-----------:|
+| F1 Score / Dice    | 52.7                        | 56.1          | **57.2**                         
+| IoU                | 37.1                        | 40.7          | 41.9
+| Precision          | 51.0                        | 58.2          | 59.0
+| Recall             | 68.0                        | 64.0          | 64.8
 
+<br />
 
-| Complexity     | UNet2D<br /> Baseline (1 day) | UNet2D<br /> All Samples  | UNet2D <br /> > 800ha | UNet2D <br /> > 1500ha | UNet3D <br /> All Samples
-|----------------|:-----------------------------:|:-------------------------:|:---------------------:|:----------------------:|:-------------------------:
-| [64, 128]      | 48.8                          | 47.7                      | 47.3                  | 46.7                   | **49.2**                          
-| [64, 128, 256] | 48.8                          | 47.6                      | -                     | -                      | -
-
-<br />Baseline model is using tesnor shape (channels, height, width) = (27, 64, 74) <br />
-All Samples models are using tensor shape (channels, height, width) = (117, 64, 64) <br />
-All Samples UNet3D model is using tensor shape (time, channels, height, width) = (7 , 27, 64, 64) <br /> <br />
+- Baseline Model is trained using only the fire day with 27 variables <br />
+- UNet2D is trained using all spatial and temporal data using 117 variables which are the 10 days <br />
+- UNet3D is trained using all data like UNet2D <br />
 
 ### Visualiasion of Test Results
 ---
