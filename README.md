@@ -1,7 +1,8 @@
 ![Atl text](https://github.com/nikos230/WildFireSpread/blob/main/logos/fire.png)<br /> <br /> 
-(work in progress... as of January 2025)
+(work in progress... as of Feb 2025)
 
 ![Alt text](https://github.com/nikos230/WildFireSpread/blob/main/screenshots/dynamic_variables.gif)
+![Alt text](https://github.com/nikos230/WildFireSpread/blob/main/screenshots/variables_single_plot.png)
 
 ## About The Project
 A Machine Learning ready Dataset and Model to predict final burned area. <br /> <br /> 
