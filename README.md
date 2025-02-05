@@ -7,7 +7,7 @@
 
 
 # About The Project
-A Machine Learning ready Dataset and Model to predict final burned area. <br /> <br /> 
+A Machine Learning ready Dataset and Model to predict final burned area from a Wildfire. <br /> <br /> 
 This project is part of my Thesis and makes use of [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) Dataset and UNet models to predict final burned area from 27 remote sensing variables using spatial and temporal data.<br /> <br /> 
 **This project includes** :
 - Deep Learing Models 
@@ -47,9 +47,8 @@ A baseline UNet2D is trained on only the fire day and then with all samples mean
 - UNet2D is trained using all spatial and temporal data using 117 variables which are the 10 days <br />
 - UNet3D is trained using all data like UNet2D <br />
 
-### Visualiasion of Test Results
----
-Using the test dataset, which is year 2021 and 2022, below are show some results in binary classification and some from QGIS, binary classification is converted to Shapefile and visualised using QGIS and Google Maps as a Basemap. <br /> <br />
+## Visualiasion of Test Results
+Using the test dataset, which is year 2022, below are show some results in binary classification and some from QGIS, binary classification is converted to Shapefile and visualised using QGIS and Google Maps as a Basemap. <br /> <br />
 
  - Red is the Ground Truth and Black box is the Prediction by UNet3D trained in All Samples (2006 to 2000), Green Points are the ignition points.
 
@@ -61,26 +60,26 @@ Using the test dataset, which is year 2021 and 2022, below are show some results
 
 
 ## Contact
-For more info contact in email : nikolas619065@gmail.com <br /><br /><br />
+For more info contact : nikolas619065@gmail.com <br /><br /><br />
 
-### Dataset Variables, Spatial resolution and Sources
+## Dataset Variables, Spatial resolution and Sources
 
-| Variables (Dynamic, 1 day resolution)        | Spatial Resolution | Source     |  
-|----------------------------------------------|:------------------:|:----------:|
-|Max Temperature                               | 9km                | ERA5-Land  |
-|Max Wind Speed                                | 9km                | ERA5-Land  |
-|Max Wind Direction                            | 9km                | ERA5-Land  |
-|Max Surface Pressure                          | 9km                | ERA5-Land  |
-|Min Relative Humidity                         | 9km                | ERA5-Land  |
-|Total Precipitation                           | 9km                | ERA5-Land  |
-|Mean Surface Solar Radiation Downwards        | 9km                | ERA5-Land  |
-|Day Land Surface Temperature                  | 1km                | MODIS      |
-|Night Land Surface Temperature                | 1km                | MODIS      |
-|Normalized Difference Vegetation Index (NDVI) | 500m               | MODIS      |
-|Leaf Area Index (LAI)                         | 500m               | MODIS      |
-|Soil moisture                                 | 5km                | EDO        |
-|Burned Areas                                  | 1km                | EFFIS      |
-|Ignition Points                               | 1km                | MODIS      |
+| Variables (Dynamic)                          | Spatial Resolution | Temportal Resolution | Source |  
+|----------------------------------------------|:------------------:|:----------:|:-----------:|
+|Max Temperature                               | 9km                |     1day    | ERA5-Land  |  
+|Max Wind Speed                                | 9km                |     1day    | ERA5-Land  |
+|Max Wind Direction                            | 9km                |     1day    | ERA5-Land  |
+|Max Surface Pressure                          | 9km                |     1day    | ERA5-Land  |
+|Min Relative Humidity                         | 9km                |     1day    | ERA5-Land  |
+|Total Precipitation                           | 9km                |     1day    | ERA5-Land  |
+|Mean Surface Solar Radiation Downwards        | 9km                |     1day    | ERA5-Land  |
+|Day Land Surface Temperature                  | 1km                |     1day    | MODIS      |
+|Night Land Surface Temperature                | 1km                |     1day    | MODIS      |
+|Normalized Difference Vegetation Index (NDVI) | 500m               |     16days  | MODIS      |
+|Leaf Area Index (LAI)                         | 500m               |     16days  | MODIS      |
+|Soil moisture                                 | 5km                |     5days   | EDO        |
+|Burned Areas                                  | 1km                |     1day    | EFFIS      |
+|Ignition Points                               | 1km                |     1day    | MODIS      |
 
 | Variables (Static)                           | Spatial Resolution | Source     |
 |----------------------------------------------|:------------------:|:----------:|
