@@ -34,12 +34,21 @@ The main evaluation metric is the Dice Coefficient, presented below, which shows
 A baseline UNet2D is trained on only the fire day and then with all samples meaning using all 10 days each sample has. 
 
 
-| Metrics (%)     | UNet2D<br /> Baseline (1 day) | UNet2D<br />  | UNet3D <br />  |
-|:------------------:|:-----------------------------:|:-------------:|:-----------:|
-| F1 Score / Dice    | 52.7                        | 56.1          | **57.2**                         
-| IoU                | 37.1                        | 40.7          | 41.9
-| Precision          | 51.0                        | 58.2          | 59.0
-| Recall             | 68.0                        | 64.0          | 64.8
+| Metrics (%)         | UNet2D<br /> Baseline (1 day) | UNet2D<br /> 10days  | UNet3D <br /> 10days  | UNet3D <br /> 5 days after fire 
+|:------------------:|:------------------------------:|:--------------------:|:---------------------:|:--------------------------:|
+| F1 Score / Dice    | 52.7                           | 56.1                 | **57.2**              | 57.3                  
+| IoU                | 37.1                           | 40.7                 | 41.9                  | 42.1
+| Precision          | 51.0                           | 58.2                 | 59.0                  | 60.5
+| Recall             | 68.0                           | 64.0                 | 64.8                  | 63.1
+
+<br />
+
+| Metrics (%)      | UNet3D <br /> 9days  | UNet3D <br /> 8days | UNet3D <br /> 7days | UNet3D <br /> 6days
+|:----------------:|:-------------------:|:-------------------:|:-------------------:|:------------------:|
+| F1 Score / Dice  | 55.1                | 54.0                | 54.1                | 53.2
+| IoU              | 39.8                | 38.7                | 38.8                | 37.9
+| Precision        | 56.2                | 55.2                | 55.2                | 54.8
+| Recall           | 64.7                | 64.1                | 64.5                | 63.1
 
 <br />
 
