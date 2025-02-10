@@ -18,6 +18,8 @@ This project is part of my Thesis and makes use of [mesogeos](https://github.com
 <br />
 
 ## Download Best Models and Dataset
+Dataset used is in .netCDF format and separated by year and by country for every sample. For every Model Metric that is reported the checkpoint is made available which can be used with the provided test.py scripts to run the experiments.
+
 | Dataset / Best Models Checkpoints |                    Link 1 (MEGA Drive)                                                  |     Link 2 (Google Drive)                         |
 |:-------|:------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------:|
 | Dataset (.zip)**                  | [Download](https://mega.nz/file/MDggRLxQ#XXeLnpCo2bsMugxs85NiS_HGjBuZLNVfsmPmxKdjF_Q)   | Soon...                                           |
