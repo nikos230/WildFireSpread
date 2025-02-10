@@ -17,21 +17,6 @@ This project is part of my Thesis and makes use of [mesogeos](https://github.com
 - Showcase of results
 <br />
 
-## Download Best Models and Dataset
-Dataset used is in .netCDF format and separated by year and by country for every sample. For every Model Metric that is reported the checkpoint is made available which can be used with the provided test.py scripts to run the experiments.
-
-| Dataset / Best Models Checkpoints |                    Link 1 (MEGA Drive)                                                  |     Link 2 (Google Drive)                         |
-|:-------|:------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------:|
-| Dataset (.zip)**                  | [Download](https://mega.nz/file/MDggRLxQ#XXeLnpCo2bsMugxs85NiS_HGjBuZLNVfsmPmxKdjF_Q)   | Soon...                                           |
-| UNet3D (10days)                   | [Download](https://mega.nz/folder/8O5RDBZQ#y3olJJq7_4IksUF5zDcV2g)                      | Soon...                                           |
-| Unet3D (5 days after)             | [Download](https://mega.nz/folder/AH5SGaqB#tX5LuckkyvWmPy-Bldzz9g)                      | Soon...                                           |
-| Unet2D (10days)                   | [Download](https://mega.nz/folder/MOJlnADD#0KJSwgMoBSEN-TOGZTSyPw)                      | Soon...                                           |
-| Unet2D (1day) Baseline            | [Download](https://mega.nz/folder/1OpyHCCJ#HYun7f5rxJDP942THh62eQ)                      | Soon...                                           |
- 
-** Dataset size is 8.80gb in .zip format when unzipped size will be 31gb
-
-<br />
-
 ## Dataset
 Training and Testing of the Models have been done with [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) Dataset. Training data (and validation) are 27 variables in 64 x 64 km paches and a Spatial Resolution of 1 pixel = 1km x 1km in netCDF format. The mesogeos DataCube has 1km x 1km x 1day Spatial and Temporal resolution of 1 day. <br /> <br />
 The Samples from the DataCube have 64km x 64km x 1day resoltuion, for every fire event there is a 64 x 64km patch around the fire with a random offset so the burned area is not always in the middle of the patch, and for every sample there are 10 days in total, 5 before the fire started and 5 days after. Samples are from the mesogeos region and includes ≈9500 samples from 31 countries and from years 2006 to 2022. <br /><br />
@@ -71,6 +56,23 @@ A baseline UNet2D is trained on only the fire day and then with all samples mean
 - Baseline Model is trained using only the fire day with 27 variables <br />
 - UNet2D is trained using all spatial and temporal data using 117 variables which are the 10 days <br />
 - UNet3D is trained using all data like UNet2D <br />
+
+## Download Best Models and Dataset
+Dataset used is in .netCDF format and separated by year and by country for every sample. For every Model Metric that is reported the checkpoint is made available which can be used with the provided test.py scripts to run the experiments.
+
+| Dataset / Best Models Checkpoints |                    Link 1 (MEGA Drive)                                                  |     Link 2 (Google Drive)                         |
+|:-------|:------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------:|
+| Dataset (.zip)**                  | [Download](https://mega.nz/file/MDggRLxQ#XXeLnpCo2bsMugxs85NiS_HGjBuZLNVfsmPmxKdjF_Q)   | Soon...                                           |
+| UNet3D (10days)                   | [Download](https://mega.nz/folder/8O5RDBZQ#y3olJJq7_4IksUF5zDcV2g)                      | Soon...                                           |
+| Unet3D (5 days after)             | [Download](https://mega.nz/folder/AH5SGaqB#tX5LuckkyvWmPy-Bldzz9g)                      | Soon...                                           |
+| Unet2D (10days)                   | [Download](https://mega.nz/folder/MOJlnADD#0KJSwgMoBSEN-TOGZTSyPw)                      | Soon...                                           |
+| Unet2D (1day) Baseline            | [Download](https://mega.nz/folder/1OpyHCCJ#HYun7f5rxJDP942THh62eQ)                      | Soon...                                           |
+ 
+** Dataset size is 8.80gb in .zip format when unzipped size will be 31gb
+
+<br />
+
+
 
 ## Visualiasion of Test Results
 Using the test dataset, which is year 2022, below are show some results in binary classification and some from QGIS, binary classification is converted to Shapefile and visualised using QGIS and Google Maps as a Basemap. <br /> <br />
