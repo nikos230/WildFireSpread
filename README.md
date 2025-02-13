@@ -75,19 +75,8 @@ Dataset used is in .netCDF format and separated by year and by country for every
 
 
 ## Visualiasion of Test Results
-Using the test dataset, which is year 2022, below are show some results in binary classification and some from QGIS, binary classification is converted to Shapefile and visualised using QGIS and Google Maps as a Basemap. <br /> <br />
+Soon....
 
- - Red is the Ground Truth and Black box is the Prediction by UNet3D trained in All Samples (2006 to 2000), Green Points are the ignition points.
-
-<img src="https://github.com/nikos230/WildFireSpread/blob/main/screenshots/Picture2.png">  <br /> <br />
-
-- Binary Classification results
-
-<img src="https://github.com/nikos230/WildFireSpread/blob/main/screenshots/Screenshot_2.jpg">
-
-
-## Contact
-For more info contact : nikolas619065@gmail.com <br /><br /><br />
 
 ## Dataset Variables, Spatial resolution and Sources
 
@@ -124,6 +113,8 @@ For more info contact : nikolas619065@gmail.com <br /><br /><br />
 |Fraction of wetland                           |300m                | Copernicus CCS
 |Roads distance                                |1km                 | Worldpop
 
-The above variables are in 64km x 64km x 7days resoltuion, for every fire event there is a 64x64km patch around the fire with a random offset so the burned area is not always in the middle of the patch, and for every sample there are 7 days in total, 5 before the fire started and 2 days after.
+
+## Contact
+For more info contact : nikolas619065@gmail.com <br /><br /><br />
 
 
