@@ -2,18 +2,27 @@ import os
 import rasterio as rio
 import numpy as np
 import matplotlib.pyplot as plt
+import xarray as xr
 
 
 if __name__ == "__main__":
     os.system("clear")
     
     path_to_tifs = 'output/xAI/UNet3D/sample_corrected_sample_10333_tif'
+    path_to_nc = '~/nvme1/n.anastasiou/dataset_64_64_all_10days_final/2022/Greece/corrected_sample_10333.nc'
+
+    # open the sample to make the burned area mask
+    ds = xr.open_dataset(path_to_nc)
+    mask = ds['burned_areas'].values[4, :, :]
+
 
 
     variable_sums = {}
     days_sum = {}
     ndvi_per_day_sum = {}
 
+    positives_variables = {}
+    negatives_variables = {}
 
     # take mean value of every saliency map (variables)
     for day in os.listdir(path_to_tifs):
@@ -36,7 +45,6 @@ if __name__ == "__main__":
                 variable_sums[variable_name] += variable_data
 
 
-
                 # days sum
                 if day not in days_sum:
                     days_sum[day] = np.zeros_like(variable_data, dtype=np.float64)    
@@ -50,7 +58,26 @@ if __name__ == "__main__":
                     ndvi_per_day_sum[day] += variable_data
 
                 
+                # positives / negatives explain
+                positives = np.where(mask, variable_data, 0)
+                negatives = np.where(~mask.astype(bool), variable_data, 0)
+
+                if variable_name not in positives_variables:
+                    positives_variables[variable_name] = np.zeros_like(0, dtype=np.float64)
+                positives_variables[variable_name] += positives.max()  
+
+                if variable_name not in negatives_variables:
+                    negatives_variables[variable_name] = np.zeros_like(0, dtype=np.float64)
+                negatives_variables[variable_name] += negatives.max() 
+  
+                
                 variable_tif.close()
+
+    # for variable in positives_variables:
+    #     print(positives_variables[variable])
+    #     exit()
+
+
 
     for day in ndvi_per_day_sum:
         ndvi_per_day_sum[day] = ndvi_per_day_sum[day].sum()
@@ -67,6 +94,11 @@ if __name__ == "__main__":
     
     # plot variables importance
     variable_sums = {key.replace('saliency_map_', ''): value for key, value in variable_sums.items()}
+    positives_variables = {key.replace('saliency_map_', ''): value for key, value in positives_variables.items()}
+    negatives_variables = {key.replace('saliency_map_', ''): value for key, value in negatives_variables.items()}
+
+    del positives_variables['ignition_points']
+    del negatives_variables['ignition_points']
 
     del variable_sums['ignition_points']
 
@@ -130,6 +162,28 @@ if __name__ == "__main__":
     plt.close()
 
 
+    # plot positives / negatives explain
+    variable_names = list(positives_variables.keys())
+
+    variable_values_positives = list(positives_variables.values())
+    variable_values_negatives = list(negatives_variables.values())
+    variable_values_negatives = -np.array(variable_values_negatives)
+
+    plt.barh(variable_names, variable_values_negatives, color='red', label="Negatives", zorder=3)
+    plt.barh(variable_names, variable_values_positives, color='blue', label="Positives", zorder=3)
+
+
+    plt.axvline(0, color='black', linewidth=1)  # Add center vertical line
+    plt.xlabel('Variable Importance', fontsize=12)
+    plt.ylabel('Variables', fontsize=12)
+    plt.title('Importance of Each Variable (Positives vs Negatives)', fontsize=14)
+    plt.legend()
+    plt.grid(axis='x', linestyle=':', linewidth=0.5, color='gray', zorder=0)
+
+    os.makedirs('output/xAI/plots', exist_ok=True)
+    plt.tight_layout()
+    plt.savefig('output/xAI/plots/xAI_variables_positives_negatives.png', dpi=300)
+    plt.close()
 
 
     

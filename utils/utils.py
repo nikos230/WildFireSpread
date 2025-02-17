@@ -70,7 +70,7 @@ def load_files_validation(dataset_path, years, countries):
 
 
 
-def load_files_test_(dataset_path, years, countries, burned_area_big, burned_area_ratio):
+def load_files_test_(dataset_path, years, countries, burned_area_big, burned_area_small, burned_area_ratio):
     # load train or validation set
     files = []
     for year in years:
@@ -83,12 +83,16 @@ def load_files_test_(dataset_path, years, countries, burned_area_big, burned_are
 
                 ds = xr.open_dataset(path_to_file)
                 
-                if ds.attrs['burned_area_ha'] < burned_area_big:
+                if ds.attrs['burned_area_ha'] > burned_area_big and ds.attrs['burned_area_ha'] < burned_area_small:
+                    files.append(new_file)
+                    #print(ds.attrs['burned_area_ha'])
+                    ds.close()
+                    continue
+                else:
                     ds.close()
                     continue
 
-                ds.close()
-                files.append(new_file)
+
 
     return files 
 

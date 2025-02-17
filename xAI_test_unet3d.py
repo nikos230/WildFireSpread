@@ -21,7 +21,7 @@ import pandas as pd
 from datetime import datetime
 from shapely.geometry import shape
 import imageio
-import shap
+
 
 
 def test(
@@ -41,7 +41,7 @@ def test(
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
     print(f'Number of test samples: {len(test_loader)}')
-    # Model
+    
     input_channels = test_dataset[0][0].shape[0]
     output_channels = 1
 
@@ -76,6 +76,9 @@ def test(
     all_ground_truths = []
     all_dice = []
     
+    importances_variables = pd.DataFrame(columns=['sample', 'variable', 'permuted_score', 'importance', 'baseline_score'])
+    importances_days = pd.DataFrame(columns=['sample', 'day', 'permuted_score', 'importance', 'baseline_score'])
+
     cnt = 0
     #with torch.no_grad():
     for idx, (inputs, targets) in enumerate(test_loader):
@@ -85,11 +88,11 @@ def test(
 
         inputs.retain_grad()
 
-        outputs = model(inputs)
+        #outputs = model(inputs)
 
-        outputs = outputs.mean()
+        #outputs = outputs.mean()
         
-        outputs.backward(retain_graph=True)
+        #outputs.backward(retain_graph=True)
 
         dynamic_vars = [
             'd2m', 
@@ -130,7 +133,6 @@ def test(
         ]
 
         # salinecy maps explain
-
         # saliency = inputs.grad.abs()
 
         # file_name = os.path.basename(test_files[idx]).split('.')[0]
@@ -138,65 +140,64 @@ def test(
         #     save_saliency_map(idx, saliency, dynamic_vars, static_vars, targets, inputs, xAI_save_path, file_name)
         #     exit()
 
-        # SHAP explain
-        explainer = shap.DeepExplainer(model, inputs)
-        #output_scalar = outputs.mean()
-        #output_scalar = outputs[:, :, outputs.shape[2] // 2, outputs.shape[3] // 2, outputs.shape[4] // 2]
-        shap_values = explainer.shap_values(inputs)
+        
 
-        plt.figure()
-        shap.summary_plot(shap_values, inputs.cpu().numpy(), show=False)  # Disable immediate display
-        plt.savefig(f"{xAI_save_path}/{file_name}_shap_summary.png", dpi=300, bbox_inches="tight")
-        plt.close()
+        # permuatation importance explain
+        def permutation(model, test_data, label, metric, dynamic_vars, static_vars, file_name):
+            all_vars_names = dynamic_vars + static_vars
+            baseline_score = 0
+            with torch.no_grad():
+                baseline_score = metric(model(test_data), label).detach().cpu().numpy().item()
+            baseline_score = round(baseline_score, 4)    
+            #print(f'Baseline Score: {baseline_score:.4f}')
 
+            importances_variables = pd.DataFrame(columns=['sample', 'variable', 'permuted_score', 'importance', 'baseline_score'])
+            importances_days = pd.DataFrame(columns=['sample', 'day', 'permuted_score', 'importance', 'baseline_score'])
 
-        model.zero_grad()  # Clear model parameters' gradients
+            for channel in range(test_data.shape[1]):
+                test_data_permuted = test_data.clone()
+                test_data_permuted[:, channel, :, :, :] = 0 #torch.randn_like(test_data_permuted[:, channel, :, :, :]) 
+                permuted_score = 0
+                with torch.no_grad():
+                    permuted_score = metric(model(test_data_permuted), label).detach().cpu().numpy().item()
+                permuted_score = round(permuted_score, 4)    
+                importance = round(baseline_score - permuted_score, 4)
+                importances_variables.loc[channel] = [file_name, all_vars_names[channel], permuted_score, importance, baseline_score]
+                 
+                #print(f'Permuted Score for Variable {all_vars_names[channel]}: {channel} is {permuted_score:.4f}\nImportance is {baseline_score - permuted_score:.4f}\n')
+
+            for day in range(test_data.shape[2]):
+                test_data_permuted = test_data.clone()
+                test_data_permuted[:, :, day, :, :] = 0 #torch.randn_like(test_data_permuted[:, :, day, :, :])  
+                permuted_score = 0
+                with torch.no_grad():
+                    permuted_score = metric(model(test_data_permuted), label).detach().cpu().numpy().item()
+                permuted_score = round(permuted_score, 4)    
+                importance = round(baseline_score - permuted_score, 4)    
+                importances_days.loc[day] = [file_name, day, permuted_score, importance, baseline_score]
+                 
+                #print(f'Permuted Score for Day: {day} is {permuted_score:.4f}\nImportance is {baseline_score - permuted_score:.4f}\n')
+                  
+            return importances_variables, importances_days
+
+        file_name = os.path.basename(test_files[idx]).split('.')[0]
+        importance_variables_new, importance_days_new = permutation(model, inputs, targets, dice_coefficient, dynamic_vars, static_vars, file_name)
+
+        importances_variables = pd.concat([importances_variables, importance_variables_new], axis=0)
+        importances_days = pd.concat([importances_days, importance_days_new], axis=0)
+
+        #exit()      
+
+        model.zero_grad()  # clear gradients
         inputs.grad = None
+
+    #print(importances_variables) 
+    #print(importances_days)
+    os.makedirs(f'{xAI_save_path}/permute', exist_ok=True)
+    importances_variables.to_csv(f'{xAI_save_path}/permute/variables.csv')
+    importances_days.to_csv(f'{xAI_save_path}/permute/days.csv')     
     
-        # dice = dice_coefficient(outputs, targets, threshold=threshold).item()
-        # accuracy_ = accuracy(outputs, targets, threshold=threshold).item()
-        # f1_score_ = f1_score(outputs, targets, threshold=threshold).item()
-        # iou_ = iou(outputs, targets, threshold=threshold).item()
-        # precision_ = precision(outputs, targets, threshold=threshold).item()
-        # recall_ = recall(outputs, targets, threshold=threshold).item()
 
-
-        # total_dice += dice
-        # total_accuracy += accuracy_
-        # total_f1_score += f1_score_
-        # total_iou += iou_
-        # total_precision += precision_
-        # total_recall += recall_
-
-        # Apply sigmoid activation to get probabilities
-        #preds = torch.sigmoid(outputs)
-        #preds = preds.cpu().numpy()[0, 0]  # Shape: (height, width)
-        #targets = targets.cpu().numpy()[0, 0]  # Shape: (height, width)
-
-        # Optional: Threshold the predictions to get binary masks
-        #binary_preds = (preds > threshold).astype(np.uint8)
-
-        # Collect predictions and ground truths for visualization
-        #all_predictions.append(binary_preds)
-        #all_ground_truths.append(targets)
-        #all_dice.append(dice)
-
-
-
-    # avg_dice = total_dice / len(test_loader)
-    # avg_accuracy = total_accuracy / len(test_loader)
-    # avg_f1_score = total_f1_score / len(test_loader)
-    # avg_iou = total_iou / len(test_loader)
-    # avg_precision = total_precision / len(test_loader)
-    # avg_recall = total_recall / len(test_loader)
-
-
-    # print(f'Average Dice Coefficient on Test Set: {avg_dice:.4f}')
-    # print(f'Average Accuracy Coefficient on Test Set: {avg_accuracy:.4f}')
-    # print(f'Average f1 Score Coefficient on Test Set: {avg_f1_score:.4f}')
-    # print(f'Average IoU Coefficient on Test Set: {avg_iou:.4f}')
-    # print(f'Average Precision Coefficient on Test Set: {avg_precision:.4f}')
-    # print(f'Average Recall Coefficient on Test Set: {avg_recall:.4f}')
  
 
    

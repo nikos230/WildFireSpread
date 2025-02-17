@@ -28,14 +28,14 @@ if __name__ == "__main__":
     
 
     # plot samples per year
-    df_year.plot(x='year', y='samples', kind='bar', color='#1f77b4', legend=False, zorder=2)
-    plt.title('Samples per Year 2006 - 2022', fontsize=10)
-    plt.xlabel('Years', fontsize=8)
-    plt.xticks(fontsize=7, color='black', rotation=0)
-    plt.ylabel('Number of samples', fontsize=8)
+    df_year.plot(x='year', y='samples', kind='bar', color='#0bb4ff', legend=False, zorder=2)
+    plt.title('Samples per Year 2006 - 2022', fontsize=12)
+    plt.xlabel('Years', fontsize=9)
+    plt.xticks(fontsize=7.5, color='black', rotation=0)
+    plt.ylabel('Number of samples', fontsize=9)
     plt.yticks(fontsize=7.5)
     plt.grid(axis='y', linestyle=':', linewidth=0.5, color='gray', zorder=1)
-    plt.text(-0.5, 1350, 'Total number of Samples: 9568', fontsize=6)
+    plt.text(-0.5, 1350, 'Total number of samples: 9568', fontsize=7)
     plt.tight_layout()
 
     os.makedirs('output/samples_stats/plots', exist_ok=True)
@@ -43,11 +43,11 @@ if __name__ == "__main__":
 
 
     # plot samples per month
-    df_months.plot(x='month_name', y='samples', kind='bar', color='#1f77b4', legend=False, zorder=2)
-    plt.title('Samples per Month January - Decomber (2006 - 2022)', fontsize=10)
-    plt.xlabel('Months', fontsize=8)
+    df_months.plot(x='month_name', y='samples', kind='bar', color='#0bb4ff', legend=False, zorder=2)
+    plt.title('Samples per Month January - December (2006 - 2022)', fontsize=12)
+    plt.xlabel('Months', fontsize=9)
     plt.xticks(fontsize=7, color='black', rotation=30)
-    plt.ylabel('Number of samples', fontsize=8)
+    plt.ylabel('Number of samples', fontsize=9)
     plt.yticks(fontsize=7.5)
     plt.grid(axis='y', linestyle=':', linewidth=0.5, color='gray', zorder=1)
     plt.tight_layout()

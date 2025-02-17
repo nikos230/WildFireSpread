@@ -118,6 +118,7 @@ class UNet3D(nn.Module):
 
         # Reduce depth dimension (optional, adjust if necessary)
         x = torch.mean(x, dim=2)  # Shape: (batch_size, out_channels, height, width)
+        #x = torch.mean(x, dim=[1, 2, 3])
 
         # Apply final activation (if any)
         if self.final_activation:

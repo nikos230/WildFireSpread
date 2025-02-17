@@ -33,14 +33,14 @@ def test(
     threshold, num_layers, 
     checkpoint_path, test_countries,
     world_bounds, save_results_path,
-    burned_area_big
+    burned_area_big, burned_area_small
     ):
     
     # load train and validation files from folders | Dataset and Dataloader
-    if burned_area_big == 0:
+    if burned_area_big == -1 or burned_area_small == -1:
         test_files = load_files(dataset_path, test_years, test_countries)
     else:
-        test_files = load_files_test_(dataset_path, test_years, test_countries, burned_area_big, 0)
+        test_files = load_files_test_(dataset_path, test_years, test_countries, burned_area_big, burned_area_small, 0)
 
 
     test_dataset = BurnedAreaDataset(test_files)
@@ -139,12 +139,12 @@ def test(
 
 
     print(f'Average Dice Coefficient on Test Set: {avg_dice:.4f}')
-    print(f'Average Accuracy Coefficient on Test Set: {avg_accuracy:.4f}')
-    print(f'Average f1 Score Coefficient on Test Set: {avg_f1_score:.4f}')
-    print(f'Average IoU Coefficient on Test Set: {avg_iou:.4f}')
-    print(f'Average Precision Coefficient on Test Set: {avg_precision:.4f}')
-    print(f'Average Recall Coefficient on Test Set: {avg_recall:.4f}')
-    print(f'Average AUC Coefficient on Test Set: {avg_auc_score:.4f}')
+    print(f'Average Accuracy on Test Set: {avg_accuracy:.4f}')
+    print(f'Average f1 Score on Test Set: {avg_f1_score:.4f}')
+    print(f'Average IoU on Test Set: {avg_iou:.4f}')
+    print(f'Average Precision on Test Set: {avg_precision:.4f}')
+    print(f'Average Recall on Test Set: {avg_recall:.4f}')
+    print(f'Average AUC on Test Set: {avg_auc_score:.4f}')
     #exit()
 
     num_samples = len(all_predictions)
@@ -308,6 +308,7 @@ if __name__ == '__main__':
     test_countries    = dataset_config['samples']['test_countries']
     ex_count_test     = dataset_config['samples']['exlude_countries_from_test']
     burned_area_big   = dataset_config['samples']['bunred_area_bigger_than']
+    burned_area_small = dataset_config['samples']['bunred_area_smaller_than']
     checkpoints       = train_config['model']['checkpoints']
     num_filters       = train_config['model']['num_filters']
     kernel_size       = train_config['model']['kernel_size']
@@ -317,7 +318,7 @@ if __name__ == '__main__':
     num_layers        = train_config['model']['num_layers']
     threshold         = train_config['model']['threshold']
     drop_out_rate     = train_config['model']['drop_out_rate']
-    checkpoint_path   = train_config['testing']['checkpoint_path']
+    checkpoint_path   = train_config['testing']['checkpoint_path'] 
     save_results_path = train_config['testing']['save_results_path']
 
    
@@ -349,9 +350,11 @@ if __name__ == '__main__':
     # find train countries and exclude some if defined in dataset.yaml
     if test_countries == 'all':
         test_countries = all_countries
+        print(f'Using all available countries for test')
     else:
         test_countries = [test_countries]
         test_countries = test_countries[0].split(', ')
+        print(f'Using {test_countries} for test')
 
     if ex_count_test != '':
         ex_count_test = [ex_count_test]
@@ -359,8 +362,12 @@ if __name__ == '__main__':
         test_countries = list(set(test_countries) - set(ex_count_test))
 
 
-    if burned_area_big == 'None':
-        burned_area_big = 0
+    if burned_area_big == 'None' or burned_area_small == 'None':
+        burned_area_big = -1
+        burned_area_small = -1
+        print(f'Using all fires for test')
+    else:
+        print(f'Using {burned_area_big} < fire size(ha) < {burned_area_small} fires')    
 
     
     test(
@@ -372,5 +379,5 @@ if __name__ == '__main__':
         float(threshold), int(num_layers),
         checkpoint_path, test_countries, 
         world_bounds, save_results_path,
-        int(burned_area_big)
+        int(burned_area_big), int(burned_area_small)
         )
