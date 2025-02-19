@@ -15,7 +15,22 @@ This project is part of my Thesis and makes use of [mesogeos](https://github.com
 - Tools for model evalution and visualization of results in shapefile form
 - Tools for Dataset statistics extraction
 - Showcase of results
-<br />
+
+
+## Table of Contents
+- [About the Project](#about-the-project)
+  - [Dataset](#Dataset)
+  - [Deep Learning Models](#deep-learning-models)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+- [Acknowledgments](#acknowledgments)
+
 
 ## Dataset
 Training and Testing of the Models have been done with [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) Dataset. Training data (and validation) are 27 variables in 64 x 64 km paches and a Spatial Resolution of 1 pixel = 1km x 1km in netCDF format. The mesogeos DataCube has 1km x 1km x 1day Spatial and Temporal resolution of 1 day. <br /> <br />
