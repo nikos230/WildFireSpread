@@ -13,8 +13,6 @@ class BurnedAreaDataset(Dataset):
 
     def load_data(self):
         for file in self.nc_files:
-            print(file)
-            exit()
             sample = xr.open_dataset(file)
             #sample = sample.isel(time=slice(None, 6)) 
 
@@ -97,12 +95,12 @@ class BurnedAreaDataset(Dataset):
 
                     data_min = np.nanmin(channel_data)
                     data_max = np.nanmax(channel_data)
-                    input_tensor[channel] = -(channel_data - data_min) / (data_max - data_min)
-                    # if data_max - data_min > 0:
-                    #     input_tensor[channel] = (channel_data - data_min) / (data_max - data_min)
-                    # else:
-                    #     # same values all over the channel
-                    #     input_tensor[channel] = input_tensor[channel]#np.zeros_like(channel_data)
+                    #input_tensor[channel] = -(channel_data - data_min) / (data_max - data_min)
+                    if data_max - data_min > 0:
+                        input_tensor[channel] = (channel_data - data_min) / (data_max - data_min)
+                    else:
+                        # same values all over the channel
+                        input_tensor[channel] = input_tensor[channel]#np.zeros_like(channel_data)
                     
                 else:    
                     #print(channel)
