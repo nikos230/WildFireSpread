@@ -155,6 +155,10 @@ If you do not train the models you can use the saved checkpoints from my work. Y
 - For UNet2D, download the best model from this [link](https://mega.nz/folder/MOJlnADD#0KJSwgMoBSEN-TOGZTSyPw) and go to `configs/train_test_unet2d.yaml` and specofy path to checkpoint in `checkpoint_path:` variable, then Run test_unet2d.py
 
 
+## Contact
+For more info contact : nikolas619065@gmail.com <br /><br />
+
+
 ## Dataset Variables, Spatial resolution and Sources
 
 | Variables (Dynamic)                          | Spatial Resolution | Temportal Resolution | Source |  
@@ -191,7 +195,5 @@ If you do not train the models you can use the saved checkpoints from my work. Y
 |Roads distance                                |1km                 | Worldpop
 
 
-## Contact
-For more info contact : nikolas619065@gmail.com <br /><br /><br />
 
 
