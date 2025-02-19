@@ -94,8 +94,9 @@ Dataset used is in .netCDF format and separated by year and by country for every
 
 
 ## Visualiasion of Test Results
-Soon....
+![Map here](https://github.com/nikos230/WildFireSpread/blob/main/screenshots/test.png)
 
+More to come soon...
 
 
 # Getting Started
