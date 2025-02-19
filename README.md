@@ -19,17 +19,19 @@ This project is part of my Thesis and makes use of [mesogeos](https://github.com
 
 ## Table of Contents
 - [About the Project](#about-the-project)
-  - [Dataset](#Dataset)
+  - [Dataset](#dataset)
   - [Deep Learning Models](#deep-learning-models)
+  - [Models Evaluation and Metrics (latest results Feb 2025)](#models-evaluation-and-metrics-latest-results-feb-2025)
+  - [Visualiasion of Test Results](#visualiasion-of-test-results)
 - [Getting Started](#getting-started)
+  - [How to Use](#how-to-use) 
   - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
+  
 - [Usage](#usage)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
-- [Acknowledgments](#acknowledgments)
+- [Contributing / Contact](#contact)
+- [Extra](#extra)
+ - [Dataset Variables, Spatial resolution and Sources](#dataset-variables,-spatial-resolution-and-sources)
+
 
 
 ## Dataset
@@ -93,6 +95,65 @@ Dataset used is in .netCDF format and separated by year and by country for every
 Soon....
 
 
+
+# Getting Started
+To run the experiments you can either train the model from scratch or use the trained models. Training the best model (UNet3D) takes some time...
+
+## Prerequisites
+Install requirements.txt, which has all required frameworks for the project. It is recommended to make a conda enviroment and install all files there
+
+1. First Download the Dataset of the project from this [link](https://mega.nz/file/MDggRLxQ#XXeLnpCo2bsMugxs85NiS_HGjBuZLNVfsmPmxKdjF_Q), then extract it and place the folder named `dataset_64_64_all_10days_final` inside dataset folder on the project or
+anywhere in you PC like a SSD or NVME. Then specify the path to the folder inside configs/dataset.yaml in the `corrected_dataset_path:` variable.
+
+2. First create a new Conda Enviroment
+```
+conda create -n Wildfire_env python=3.8
+```
+3. then install requirements.txt
+```
+pip install requiremets.txt
+```
+4. you will need Pytorch CUDA Enbaled to train the models on Nvidia GPU you can install it with this command
+```
+pip install torch==1.13.1+cu117 torchvision>=0.13.1+cu117 torchaudio>=0.13.1+cu117 --extra-index-url https://download.pytorch.org/whl/cu117 --no-cache-dir
+```
+5. Done! if you find something wrong contact me to fix it
+
+## How to Use
+With this repo you can train the models, test the trained models, extract dataset statistics and visualize results of model predictions in shapefiles
+
+### Training the Models
+This project has 3 Models, a baseline model, a UNet2D model and a UNet3D model. By default the Models are trained on all 10 days of each sample, only baseline model is using 1 day for training (and testing)
+
+#### Train UNet2D
+- First open `configs/train_test_unet2d.yaml` and chnage the `checkpoints:` path to somewhere is your pc.
+- Run train_unet2d.py and wait to finish.
+- Done!, now go back to `configs/train_test_unet2d.yaml` and chnage the `checkpoint_path:` to the path of your best checkpoint <br /><br />
+To test the model Run test_unet2d.py and this withh return metrics, first 100 binary results in png and all 1101 tesing samples in form of Shapefiles inside output/UNet2D folder (by default, you can chnage location of output files as will from `configs/train_test_unet2d.yaml`)
+
+#### Train UNet3D
+- First open `configs/train_test_unet3d.yaml` and chnage the `checkpoints:` path to somewhere is your pc.
+- Run train_unet3d.py and wait to finish.
+- Done!, now go back to `configs/train_test_unet3d.yaml` and chnage the `checkpoint_path:` to the path of your best checkpoint <br /><br />
+To test the model Run test_unet3d.py and this withh return metrics, first 100 binary results in png and all 1101 tesing samples in form of Shapefiles inside output/UNet3D folder (by default, you can chnage location of output files as will from `configs/train_test_unet3d.yaml`)
+
+#### Train UNet2D Baseline
+- First open `configs/train_test_unet2d.yaml` and chnage the `checkpoints:` path to somewhere is your pc. And `change save_results_path:` to somewhere different so not to overwrite the UNet2D from above.
+- Open dataset_unet2d.py and uncomment line 17 to `sample = sample.isel(time=slice(4, 5))` this will load only day 4 of the 10 days of each sample which is the fire day
+- Comment lines 57, 60, 61, 63
+- Chnage `.values[4]` in line 125 to `.values[0]`
+- Run train_unet2d.py and wait to finish.
+- Done!, now go back to `configs/train_test_unet2d.yaml` and chnage the `checkpoint_path:` to the path of your best checkpoint <br /><br />
+To test the model Run test_unet2d.py and this withh return metrics, first 100 binary results in png and all 1101 tesing samples in form of Shapefiles inside output/UNet2D folder (by default, you can chnage location of output files as will from `configs/train_test_unet2d.yaml`)
+- Roll back chnages to dataset_unet2d.py if you want to keep expirementing with all days
+
+### Tesing the pre-trained Models
+If you do not train the models you can use the saved checkpoints from my work. You can download them from the links above.
+- For UNet3D, download the best model from this [link](https://mega.nz/folder/8O5RDBZQ#y3olJJq7_4IksUF5zDcV2g) and go to `configs/train_test_unet3d.yaml` and specofy path to checkpoint in `checkpoint_path:` variable, then Run test_unet3d.py
+- For UNet2D, download the best model from this [link](https://mega.nz/folder/MOJlnADD#0KJSwgMoBSEN-TOGZTSyPw) and go to `configs/train_test_unet2d.yaml` and specofy path to checkpoint in `checkpoint_path:` variable, then Run test_unet2d.py
+
+
+# Extra
 ## Dataset Variables, Spatial resolution and Sources
 
 | Variables (Dynamic)                          | Spatial Resolution | Temportal Resolution | Source |  
