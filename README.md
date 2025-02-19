@@ -26,11 +26,8 @@ This project is part of my Thesis and makes use of [mesogeos](https://github.com
 - [Getting Started](#getting-started)
   - [How to Use](#how-to-use) 
   - [Prerequisites](#prerequisites)
-  
-- [Usage](#usage)
-- [Contributing / Contact](#contact)
-- [Extra](#extra)
- - [Dataset Variables, Spatial resolution and Sources](#dataset-variables,-spatial-resolution-and-sources)
+ - [Contributing / Contact](#contact)
+ - [Variables, Spatial and Temporal Resolution and Sources](#dataset-variables-spatial-resolution-and-sources)
 
 
 
@@ -153,7 +150,6 @@ If you do not train the models you can use the saved checkpoints from my work. Y
 - For UNet2D, download the best model from this [link](https://mega.nz/folder/MOJlnADD#0KJSwgMoBSEN-TOGZTSyPw) and go to `configs/train_test_unet2d.yaml` and specofy path to checkpoint in `checkpoint_path:` variable, then Run test_unet2d.py
 
 
-# Extra
 ## Dataset Variables, Spatial resolution and Sources
 
 | Variables (Dynamic)                          | Spatial Resolution | Temportal Resolution | Source |  
