@@ -130,25 +130,25 @@ This project has 3 Models, a baseline model, a UNet2D model and a UNet3D model. 
 
 #### Train UNet2D
 - First open `configs/train_test_unet2d.yaml` and chnage the `checkpoints:` path to somewhere is your pc.
-- Run train_unet2d.py and wait to finish.
+- Run `train_unet2d.py` and wait to finish.
 - Done!, now go back to `configs/train_test_unet2d.yaml` and chnage the `checkpoint_path:` to the path of your best checkpoint <br /><br />
-To test the model Run test_unet2d.py and this withh return metrics, first 100 binary results in png and all 1101 tesing samples in form of Shapefiles inside output/UNet2D folder (by default, you can chnage location of output files as will from `configs/train_test_unet2d.yaml`)
+To test the model Run `test_unet2d.py` and this withh return metrics, first 100 binary results in png and all 1101 tesing samples in form of Shapefiles inside output/UNet2D folder (by default, you can chnage location of output files as will from `configs/train_test_unet2d.yaml`)
 
 #### Train UNet3D
 - First open `configs/train_test_unet3d.yaml` and chnage the `checkpoints:` path to somewhere is your pc.
-- Run train_unet3d.py and wait to finish.
+- Run `train_unet3d.py` and wait to finish.
 - Done!, now go back to `configs/train_test_unet3d.yaml` and chnage the `checkpoint_path:` to the path of your best checkpoint <br /><br />
-To test the model Run test_unet3d.py and this withh return metrics, first 100 binary results in png and all 1101 tesing samples in form of Shapefiles inside output/UNet3D folder (by default, you can chnage location of output files as will from `configs/train_test_unet3d.yaml`)
+To test the model Run `test_unet3d.py` and this withh return metrics, first 100 binary results in png and all 1101 tesing samples in form of Shapefiles inside output/UNet3D folder (by default, you can chnage location of output files as will from `configs/train_test_unet3d.yaml`)
 
 #### Train UNet2D Baseline
 - First open `configs/train_test_unet2d.yaml` and chnage the `checkpoints:` path to somewhere is your pc. And `change save_results_path:` to somewhere different so not to overwrite the UNet2D from above.
-- Open dataset_unet2d.py and uncomment line 17 to `sample = sample.isel(time=slice(4, 5))` this will load only day 4 of the 10 days of each sample which is the fire day
+- Open `dataset_unet2d.py` and uncomment line 17 to `sample = sample.isel(time=slice(4, 5))` this will load only day 4 of the 10 days of each sample which is the fire day
 - Comment lines 57, 60, 61, 63
 - Chnage `.values[4]` in line 125 to `.values[0]`
-- Run train_unet2d.py and wait to finish.
+- Run `train_unet2d.py` and wait to finish.
 - Done!, now go back to `configs/train_test_unet2d.yaml` and chnage the `checkpoint_path:` to the path of your best checkpoint <br /><br />
-To test the model Run test_unet2d.py and this withh return metrics, first 100 binary results in png and all 1101 tesing samples in form of Shapefiles inside output/UNet2D folder (by default, you can chnage location of output files as will from `configs/train_test_unet2d.yaml`)
-- Roll back chnages to dataset_unet2d.py if you want to keep expirementing with all days
+To test the model Run `test_unet2d.py` and this withh return metrics, first 100 binary results in png and all 1101 tesing samples in form of Shapefiles inside output/UNet2D folder (by default, you can chnage location of output files as will from `configs/train_test_unet2d.yaml`)
+- Roll back chnages to `dataset_unet2d.py` if you want to keep expirementing with all days
 
 ### Tesing the pre-trained Models
 If you do not train the models you can use the saved checkpoints from my work. You can download them from the links above.
