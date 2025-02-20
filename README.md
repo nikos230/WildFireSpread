@@ -82,7 +82,7 @@ Dataset used is in .netCDF format and separated by year and by country for every
 
 | Dataset / Best Models Checkpoints |                    Link 1 (MEGA Drive)                                                  |     Link 2 (Google Drive)                         |
 |:-------|:------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------:|
-| Dataset (.zip)**                  | Soon...   | Soon...                                           |
+| Dataset (.zip)**                  | [Download](https://mega.nz/file/dTBX1QrQ#2INiS8LK4fB3oLxWKAOS6cRUaHiKG1m-sJx-W9i41T0)   | Soon...                                           |
 | UNet3D (10days)                   | [Download](https://mega.nz/folder/8O5RDBZQ#y3olJJq7_4IksUF5zDcV2g)                      | Soon...                                           |
 | Unet3D (5 days after)             | [Download](https://mega.nz/folder/AH5SGaqB#tX5LuckkyvWmPy-Bldzz9g)                      | Soon...                                           |
 | Unet2D (10days)                   | [Download](https://mega.nz/folder/MOJlnADD#0KJSwgMoBSEN-TOGZTSyPw)                      | Soon...                                           |
