@@ -155,8 +155,8 @@ To test the model Run `test_unet2d.py` and this withh return metrics, first 100 
 
 ### Tesing the pre-trained Models
 If you do not train the models you can use the saved checkpoints from my work. You can download them from the links above.
-- For UNet3D, download the best model from this [link](https://mega.nz/folder/8O5RDBZQ#y3olJJq7_4IksUF5zDcV2g) and go to `configs/train_test_unet3d.yaml` and specofy path to checkpoint in `checkpoint_path:` variable, then Run test_unet3d.py
-- For UNet2D, download the best model from this [link](https://mega.nz/folder/MOJlnADD#0KJSwgMoBSEN-TOGZTSyPw) and go to `configs/train_test_unet2d.yaml` and specofy path to checkpoint in `checkpoint_path:` variable, then Run test_unet2d.py
+- For UNet3D, download the best model from this [link](https://mega.nz/folder/8O5RDBZQ#y3olJJq7_4IksUF5zDcV2g) and go to `configs/train_test_unet3d.yaml` and specify path to checkpoint in `checkpoint_path:` variable, then Run test_unet3d.py
+- For UNet2D, download the best model from this [link](https://mega.nz/folder/MOJlnADD#0KJSwgMoBSEN-TOGZTSyPw) and go to `configs/train_test_unet2d.yaml` and specify path to checkpoint in `checkpoint_path:` variable, then Run test_unet2d.py
 
 
 ## Contact
