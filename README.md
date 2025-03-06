@@ -11,7 +11,7 @@ A Machine Learning ready Dataset and Model to predict final burned area from a W
 This project is part of my Thesis and makes use of [mesogeos](https://github.com/Orion-AI-Lab/mesogeos) Dataset and UNet models to predict final burned area from 27 remote sensing variables using spatial and temporal data.<br /> <br /> 
 **This project includes** :
 - Deep Learning Models 
-- Dataset with ≈ 9500 samples
+- Dataset with ≈ 9500 samples (fire events)
 - Tools for model evalution and visualization of results in shapefile form
 - Tools for Dataset statistics extraction
 - Showcase of results
