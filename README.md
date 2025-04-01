@@ -2,7 +2,7 @@
   <img src="https://raw.githubusercontent.com/nikos230/WildFireSpread/main/logos/fire.png" alt="Fire Logo" />
 </div>
 <br /> 
-(work in progress... as of March 2025)
+(work in progress... as of Apr 2025)
 
 
 
