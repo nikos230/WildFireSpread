@@ -2,8 +2,27 @@
   <img src="https://raw.githubusercontent.com/nikos230/WildFireSpread/main/logos/fire.png" alt="Fire Logo" />
 </div>
 <br /> 
-(work in progress... as of Apr 2025)
 
+</p>
+  <p align="center">
+   <a href="www.google.com">
+    <img alt="Thesis" src="https://img.shields.io/badge/Thesis%20PDF-Download-orange" />
+  </a>
+  <a href="www.google.com/maps">
+    <img alt="Thesis Presentation" src="https://img.shields.io/badge/Thesis%20Presentation-Download-orange" />
+  </a>
+</p>
+
+<p align="center">
+   <a href="https://mega.nz/file/dTBX1QrQ#2INiS8LK4fB3oLxWKAOS6cRUaHiKG1m-sJx-W9i41T0">
+    <img alt="Dataset" src="https://img.shields.io/badge/Dataset-Download-blue" />
+  </a>
+  <a href="[www.google.com](https://mega.nz/file/RTZWlCZY#H9u2s6rSAfJlgLNZLIkVvZSnJRkCGrMhWS_wnIY_aUk)">
+    <img alt="Pre-trained model" src="https://img.shields.io/badge/Pre%20Trained%20Model-Download-blue" />
+  </a>
+</p>
+
+(work in progress... as of Apr 2025)
 
 
 # About The Project
