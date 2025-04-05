@@ -4,21 +4,14 @@
 <br /> 
 
 <p align="center">
-  <a href="https://www.google.com" target="_blank">
-    <img alt="Thesis" src="https://img.shields.io/badge/Thesis%20PDF-View|Download-orange" />
-  </a>
-  <a href="https://www.google.com/maps" target="_blank">
-    <img alt="Thesis Presentation" src="https://img.shields.io/badge/Thesis%20Presentation-View|Download-orange" />
-  </a>
+  <a href="https://www.google.com" target="_blank"><img alt="Thesis" src="https://img.shields.io/badge/Thesis%20PDF-View|Download-ff0066" /></a>
+  <a href="https://www.google.com/maps" target="_blank"><img alt="Thesis Presentation" src="https://img.shields.io/badge/Thesis%20Presentation-View|Download-ff0066" /></a>
 </p>
 
 
 <p align="center">
-  <a href="https://mega.nz/file/dTBX1QrQ#2INiS8LK4fB3oLxWKAOS6cRUaHiKG1m-sJx-W9i41T0">
-    <img alt="Dataset" src="https://img.shields.io/badge/Dataset-Download-blue" />
-  </a><a href="https://mega.nz/file/RTZWlCZY#H9u2s6rSAfJlgLNZLIkVvZSnJRkCGrMhWS_wnIY_aUk">
-    <img alt="Pre-trained model" src="https://img.shields.io/badge/Pre%20Trained%20Model-Download-blue" />
-  </a>
+  <a href="https://mega.nz/file/dTBX1QrQ#2INiS8LK4fB3oLxWKAOS6cRUaHiKG1m-sJx-W9i41T0"><img alt="Dataset" src="https://img.shields.io/badge/Dataset-Download-blue" /></a>
+  <a href="https://mega.nz/file/RTZWlCZY#H9u2s6rSAfJlgLNZLIkVvZSnJRkCGrMhWS_wnIY_aUk"><img alt="Pre-trained model" src="https://img.shields.io/badge/Pre%20Trained%20Model-Download-blue" /></a>
 </p>
 
 
