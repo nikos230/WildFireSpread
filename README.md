@@ -5,10 +5,10 @@
 
 <p align="center">
   <a href="https://www.google.com" target="_blank">
-    <img alt="Thesis" src="https://img.shields.io/badge/Thesis%20PDF-Download-orange" />
+    <img alt="Thesis" src="https://img.shields.io/badge/Thesis%20PDF-View|Download-orange" />
   </a>
   <a href="https://www.google.com/maps" target="_blank">
-    <img alt="Thesis Presentation" src="https://img.shields.io/badge/Thesis%20Presentation-Download-orange" />
+    <img alt="Thesis Presentation" src="https://img.shields.io/badge/Thesis%20Presentation-View|Download-orange" />
   </a>
 </p>
 
