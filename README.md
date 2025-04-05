@@ -3,15 +3,15 @@
 </div>
 <br /> 
 
-</p>
-  <p align="center">
-   <a href="www.google.com">
+<p align="center">
+  <a href="https://www.google.com" target="_blank">
     <img alt="Thesis" src="https://img.shields.io/badge/Thesis%20PDF-Download-orange" />
   </a>
-  <a href="www.google.com/maps">
+  <a href="https://www.google.com/maps" target="_blank">
     <img alt="Thesis Presentation" src="https://img.shields.io/badge/Thesis%20Presentation-Download-orange" />
   </a>
 </p>
+
 
 <p align="center">
   <a href="https://mega.nz/file/dTBX1QrQ#2INiS8LK4fB3oLxWKAOS6cRUaHiKG1m-sJx-W9i41T0">
