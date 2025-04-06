@@ -12,7 +12,9 @@
 <p align="center">
   <a href="https://mega.nz/file/dTBX1QrQ#2INiS8LK4fB3oLxWKAOS6cRUaHiKG1m-sJx-W9i41T0"><img alt="Dataset" src="https://img.shields.io/badge/Dataset-Download-blue" /></a>
   <a href="https://mega.nz/file/RTZWlCZY#H9u2s6rSAfJlgLNZLIkVvZSnJRkCGrMhWS_wnIY_aUk"><img alt="Pre-trained model" src="https://img.shields.io/badge/Pre%20Trained%20Model-Download-blue" /></a>
+  <a href="https://mega.nz/file/RTZWlCZY#H9u2s6rSAfJlgLNZLIkVvZSnJRkCGrMhWS_wnIY_aUk"><img alt="Results" src="https://img.shields.io/badge/Results-Download-blue" /></a>
 </p>
+
 
 
 
