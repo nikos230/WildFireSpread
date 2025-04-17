@@ -168,7 +168,7 @@ To test the model Run `test_unet3d.py` and this withh return metrics, first 100 
 To test the model Run `test_unet2d.py` and this withh return metrics, first 100 binary results in png and all 1101 tesing samples in form of Shapefiles inside output/UNet2D folder (by default, you can chnage location of output files as will from `configs/train_test_unet2d.yaml`)
 - Roll back chnages to `dataset_unet2d.py` if you want to keep expirementing with all days
 
-### Tesing the pre-trained Models
+### Testing the pre-trained Models
 If you do not train the models you can use the saved checkpoints from my work. You can download them from the links above.
 - For UNet3D, download the best model from this [link](https://mega.nz/folder/8O5RDBZQ#y3olJJq7_4IksUF5zDcV2g) and go to `configs/train_test_unet3d.yaml` and specify path to checkpoint in `checkpoint_path:` variable, then Run test_unet3d.py
 - For UNet2D, download the best model from this [link](https://mega.nz/folder/MOJlnADD#0KJSwgMoBSEN-TOGZTSyPw) and go to `configs/train_test_unet2d.yaml` and specify path to checkpoint in `checkpoint_path:` variable, then Run test_unet2d.py
