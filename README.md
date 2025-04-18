@@ -81,10 +81,10 @@ A baseline UNet2D is trained on only the fire day and then with all samples mean
 
 | Metrics (%)      | UNet3D <br /> 9days  | UNet3D <br /> 8days | UNet3D <br /> 7days | UNet3D <br /> 6days
 |:----------------:|:-------------------:|:-------------------:|:-------------------:|:------------------:|
-| F1 Score / Dice  | 55.1                | 54.0                | 54.1                | 53.2
-| IoU              | 39.8                | 38.7                | 38.8                | 37.9
-| Precision        | 56.2                | 55.2                | 55.2                | 54.8
-| Recall           | 64.7                | 64.1                | 64.5                | 63.1
+| F1 Score / Dice  | 55.1                | 54.0                | 54.1                | 51.7
+| IoU              | 39.8                | 38.7                | 38.8                | 36.6
+| Precision        | 56.2                | 55.2                | 55.2                | 59.0
+| Recall           | 64.7                | 64.1                | 64.5                | 56.3
 
 <br />
 
@@ -98,10 +98,10 @@ Dataset used is in .netCDF format and separated by year and by country for every
 | Dataset / Best Models Checkpoints |                    Link 1 (MEGA Drive)                                                  |     Link 2 (Google Drive)                         |
 |:-------|:------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------:|
 | Dataset (.zip)**                  | [Download](https://mega.nz/file/dTBX1QrQ#2INiS8LK4fB3oLxWKAOS6cRUaHiKG1m-sJx-W9i41T0)   | Soon...                                           |
-| UNet3D (10days)                   | [Download](https://mega.nz/file/RTZWlCZY#H9u2s6rSAfJlgLNZLIkVvZSnJRkCGrMhWS_wnIY_aUk)                      | Soon...                                           |
-| Unet3D (5 days after)             | [Download](https://mega.nz/file/ZSZyAIQZ#Lr7pttkFV7Dc3GtEN7MMJV4dVJO18GSG3LiihAnhQYI)                      | Soon...                                           |
-| Unet2D (10days)                   | [Download](https://mega.nz/file/AXZigRKa#p3P-4bwaj9VGuo65RuRtQj2rT0Tz6SDZ2a3XOF3jTGU)                      | Soon...                                           |
-| Unet2D (1day) Baseline            | [Download](https://mega.nz/file/YGoVVahS#CrOCSd6pcXqrzKrQZlDf6YGxbIvQt8Zu1JLYiir6_70)                      | Soon...                                           |
+| UNet3D (10days)                   | [Download](https://mega.nz/file/RTZWlCZY#H9u2s6rSAfJlgLNZLIkVvZSnJRkCGrMhWS_wnIY_aUk)   | Soon...                                           |
+| Unet3D (5 days after)             | [Download](https://mega.nz/file/ZSZyAIQZ#Lr7pttkFV7Dc3GtEN7MMJV4dVJO18GSG3LiihAnhQYI)   | Soon...                                           |
+| Unet2D (10days)                   | [Download](https://mega.nz/file/AXZigRKa#p3P-4bwaj9VGuo65RuRtQj2rT0Tz6SDZ2a3XOF3jTGU)   | Soon...                                           |
+| Unet2D (1day) Baseline            | [Download](https://mega.nz/file/YGoVVahS#CrOCSd6pcXqrzKrQZlDf6YGxbIvQt8Zu1JLYiir6_70)   | Soon...                                           |
  
 ** Dataset size is 10.34gb in .zip format when unzipped size will be 30.2gb
 
