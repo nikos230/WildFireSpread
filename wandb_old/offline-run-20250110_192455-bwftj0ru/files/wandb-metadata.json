@@ -1,0 +1,46 @@
+{
+  "os":  "Linux-6.5.0-45-generic-x86_64-with-glibc2.17",
+  "python":  "3.8.19",
+  "startedAt":  "2025-01-10T17:24:55.567088Z",
+  "program":  "/home/n.anastasiou/hdd1/n.anastasiou/WildFireSpread/WildFireSpread_UNet3D/train_unet2d.py",
+  "git":  {
+    "remote":  "https://github.com/nikos230/WildFireSpread_ML.git",
+    "commit":  "e6fe88d9e00f17b0d0a02df3fd4d54d9b0cc3b29"
+  },
+  "root":  "/mnt/hdd1/n.anastasiou/WildFireSpread/WildFireSpread_UNet3D",
+  "host":  "deepcube-server",
+  "username":  "n.anastasiou",
+  "executable":  "/home/n.anastasiou/anaconda3/envs/diplomatiki/bin/python",
+  "cpu_count":  14,
+  "cpu_count_logical":  20,
+  "gpu":  "NVIDIA GeForce RTX 3080",
+  "gpu_count":  2,
+  "disk":  {
+    "/":  {
+      "total":  "982819848192",
+      "used":  "735256694784"
+    }
+  },
+  "memory":  {
+    "total":  "67216740352"
+  },
+  "cpu":  {
+    "count":  14,
+    "countLogical":  20
+  },
+  "gpu_nvidia":  [
+    {
+      "name":  "NVIDIA GeForce RTX 3080",
+      "memoryTotal":  "10737418240",
+      "cudaCores":  8704,
+      "architecture":  "Ampere"
+    },
+    {
+      "name":  "NVIDIA GeForce RTX 3080",
+      "memoryTotal":  "10737418240",
+      "cudaCores":  8704,
+      "architecture":  "Ampere"
+    }
+  ],
+  "cudaVersion":  "12.4"
+}
