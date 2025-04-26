@@ -1,3 +1,5 @@
+# Available countris in the dataset, uncheck to not use some if needed. Using all available countries by default
+
 countries:                        
   France:                                     'True' 
   Cyprus:                                     'True'               
