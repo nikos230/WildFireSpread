@@ -1,0 +1,64 @@
+dataset:
+  dataset_path:               '/home/n.anastasiou/nvme1/n.anastasiou/dataset_64_64_all_10days'             # path to dataset as produced by create_dataset.py 
+  corrected_dataset_path:     '/home/n.anastasiou/nvme1/n.anastasiou/dataset_64_64_all_10days_final'       # path to corrcted (final) dataset (containing .nc files)
+  reference_dims:             "{'y': 64, 'x': 64, 'time': 10}"                                             # reference dimension from script dataset_extraction.py
+  world_countries_bounds:     'world_shapefile/world-administrative-boundaries.shp'                        # shapefile containing countries boundaries
+
+
+
+samples:
+  train_years:                 'all'      # define train years, use 'all' to use all available years except from validation and test years. Example: '2006, 2007, 2008'
+  validation_years:            '2021'     # define in which years the model will be validated on while training
+  test_years:                  '2022'     # define test years for the final evaluation of model, available years 2006 - 2022
+  
+  train_countries:             'all'      # use 'all' to include samples from all countries available else define which countries to train on. Example: 'Greece, Italy, Algeria'
+  validation_countries:        'all'      # use 'all' to test on all available countries else define in which to test on
+  test_countries:              'all'      # use 'all' to test on all available countries else define in which to test on
+
+  exclude_countries_from_train: ''        # exclude some countries from training set, leave empty if none
+  exclude_countries_from_val:   ''        # exclude some countries from set validation, leave empty if none
+  exlude_countries_from_test:   ''        # exclude some countries from test set, leave empty if none
+
+  bunred_area_bigger_than:     'None'     # use samples only with area greater than a number in ha, leave None to be include all available samples
+  bunred_area_smaller_than:    'None'     # use samples only with area smaller than a number in ha, leave None to be include all available samples
+  #burned_area_ratio:           'None'    # range 0 to 1, percentage of big fires over small ones, set to 'None' to use all available samples 
+ 
+
+
+# Available Samples : 9568
+
+# 'France'                 : 266, 
+# 'Cyprus'                 : 34, 
+# 'Montenegro'             : 344,
+# 'Bulgaria'               : 198,
+# 'Bosnia & Herzegovina'   : 579, 
+# 'Turkey'                 : 277,
+# 'Italy'                  : 1556,
+# 'Hungary'                : 8,
+# 'Croatia'                : 284, 
+# 'Romania'                : 401,
+# 'Portugal'               : 1340,
+# 'Spain'                  : 1219,
+# 'Republic of Macedonia'  : 245,
+# 'Greece'                 : 441, 
+# 'Albania'                : 464, 
+# 'Serbia'                 : 257, 
+# 'Libyan Arab Jamahiriya' : 9,
+# 'Gibraltar'              : 2, 
+# 'Ukraine'                : 153, 
+# 'Lebanon'                : 17,
+# 'Algeria'                : 1087, 
+# 'West Bank'              : 8,
+# 'Syrian Arab Republic'   : 64, 
+# 'Morocco'                : 86, 
+# 'Tunisia'                : 194,
+# 'Israel'                 : 23,
+# 'Switzerland'            : 4, 
+# 'Jordan'                 : 2,
+# 'Slovenia'               : 3, 
+# 'Egypt'                  : 1,
+# 'Andorra'                : 1, 
+# 'Moldova, Republic of'   : 1
+
+
+            
