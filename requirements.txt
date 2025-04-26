@@ -1,6 +1,5 @@
 affine==2.3.0
 Fiona==1.8.22
-geogif==0.3
 geopandas==0.12.0
 imageio==2.35.1
 matplotlib==3.4.3
