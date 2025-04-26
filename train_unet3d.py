@@ -21,7 +21,7 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
     # make checkpoints folder if not exist
     os.makedirs(checkpoints, exist_ok=True)
     
-    batch_size = 28
+    #batch_size = 28
 
     # load train and validation files from folders | Dataset and Dataloader
     if burned_area_big == 0 and burned_area_ratio == 0:
