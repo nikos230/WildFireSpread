@@ -22,7 +22,7 @@ from torch.optim.lr_scheduler import StepLR, ReduceLROnPlateau
 def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_batchnorm, final_activation, num_epochs, batch_size, learing_rate, drop_out_rate, train_years, validation_years, threshold, num_layers, train_countries, val_countries, burned_area_big, burned_area_ratio):
     # make checkpoints folder if not exist
     os.makedirs(checkpoints, exist_ok=True)
-    batch_size = 48
+    b#atch_size = 48
     # load train and validation files from folders | Dataset and Dataloader
     if burned_area_big == 0 and burned_area_ratio == 0:
         train_files = load_files_train(dataset_path, train_years, train_countries)
@@ -52,17 +52,17 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
     input_channels = train_dataset[0][0].shape[0] # get input from input_tensor
     output_channels = 1 # binary classification
 
-    # model = UNet2D(
-    #     in_channels=input_channels,
-    #     out_channels=output_channels, 
-    #     num_filters=num_filters, 
-    #     kernel_size=kernel_size, 
-    #     pool_size=pool_size, 
-    #     use_batchnorm=use_batchnorm, 
-    #     final_activation=final_activation,
-    #     dropout_rate=drop_out_rate,
-    #     num_layers=num_layers
-    #     )
+    model = UNet2D(
+        in_channels=input_channels,
+        out_channels=output_channels, 
+        num_filters=num_filters, 
+        kernel_size=kernel_size, 
+        pool_size=pool_size, 
+        use_batchnorm=use_batchnorm, 
+        final_activation=final_activation,
+        dropout_rate=drop_out_rate,
+        num_layers=num_layers
+        )
 
     # model = UNet2D_struct(
     #     in_channels=input_channels,
@@ -84,26 +84,26 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
     #     num_layers=num_layers
     #     )
 
-    in_channels = train_dataset[0][0].shape[0]         # 27-channel input
-    num_classes = 1          # Binary segmentation
-    image_size = 64          # Image resolution
-    patch_size = 2           # Patch size
-    embed_dim = 128     # Adjust embedding dimension for smaller input
-    num_heads = 16            # Number of attention heads
-    depth = 6              # Transformer depth
-    mlp_dim = 256             # Feedforward dimension
+    # in_channels = train_dataset[0][0].shape[0]         # 27-channel input
+    # num_classes = 1          # Binary segmentation
+    # image_size = 64          # Image resolution
+    # patch_size = 2           # Patch size
+    # embed_dim = 128     # Adjust embedding dimension for smaller input
+    # num_heads = 16            # Number of attention heads
+    # depth = 6              # Transformer depth
+    # mlp_dim = 256             # Feedforward dimension
 
     
-    model = ViTSegmentation2(
-        in_channels=in_channels,
-        num_classes=num_classes,
-        image_size=image_size,
-        patch_size=patch_size,
-        embed_dim=embed_dim,
-        num_heads=num_heads,
-        depth=depth,
-        mlp_dim=mlp_dim
-    )
+    # model = ViTSegmentation2(
+    #     in_channels=in_channels,
+    #     num_classes=num_classes,
+    #     image_size=image_size,
+    #     patch_size=patch_size,
+    #     embed_dim=embed_dim,
+    #     num_heads=num_heads,
+    #     depth=depth,
+    #     mlp_dim=mlp_dim
+    # )
     # model = ViTSegmentationTemporal(
     #     in_channels=in_channels,
     #     num_classes=num_classes,
@@ -194,7 +194,7 @@ def train(dataset_path, checkpoints, num_filters, kernel_size, pool_size, use_ba
         
         # save model chackpoint
         checkpoint_path = os.path.join(checkpoints, f'model_epoch{epoch+1}.pth')
-        #torch.save(model.state_dict(), checkpoint_path)
+        torch.save(model.state_dict(), checkpoint_path)
 
         # validate the model on validation set
         model.eval()
