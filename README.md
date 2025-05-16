@@ -19,7 +19,7 @@
 
 
 
-(work in progress... as of Apr 2025)
+(IEEE Access paper, Thesis pdf and Presentation will be available soon..)
 
 
 # About The Project
