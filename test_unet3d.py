@@ -83,6 +83,11 @@ def test(
     total_precision = 0
     total_recall = 0
     totoal_auc_score = 0
+
+    total_tp = 0
+    total_fp = 0
+    total_tn = 0
+    total_fn = 0
     
     all_predictions = []
     all_ground_truths = []
@@ -129,6 +134,22 @@ def test(
             # Optional: Print progress
             #print(f'Processed sample {idx+1} - Dice Coefficient: {dice:.4f}')
 
+            # calcuate metrics for all test set
+            
+            # gather all tp, fp, tn, fn for each sample
+            tp = np.logical_and(binary_preds == 1, targets == 1).sum()
+            fp = np.logical_and(binary_preds == 1, targets == 0).sum()
+            tn = np.logical_and(binary_preds == 0, targets == 0).sum()
+            fn = np.logical_and(binary_preds == 0, targets == 1).sum()
+
+            # add to total
+            total_tp += tp
+            total_fp += fp
+            total_tn += tn
+            total_fn += fn
+
+
+
     avg_dice = total_dice / len(test_loader)
     avg_accuracy = total_accuracy / len(test_loader)
     avg_f1_score = total_f1_score / len(test_loader)
@@ -138,13 +159,31 @@ def test(
     avg_auc_score = totoal_auc_score / len(test_loader)
 
 
-    print(f'Average Dice Coefficient on Test Set: {avg_dice:.4f}')
-    print(f'Average Accuracy on Test Set: {avg_accuracy:.4f}')
-    print(f'Average f1 Score on Test Set: {avg_f1_score:.4f}')
-    print(f'Average IoU on Test Set: {avg_iou:.4f}')
-    print(f'Average Precision on Test Set: {avg_precision:.4f}')
-    print(f'Average Recall on Test Set: {avg_recall:.4f}')
-    print(f'Average AUC on Test Set: {avg_auc_score:.4f}')
+    # print(f'Average Dice Coefficient on Test Set: {avg_dice:.4f}')
+    # print(f'Average Accuracy on Test Set: {avg_accuracy:.4f}')
+    # print(f'Average f1 Score on Test Set: {avg_f1_score:.4f}')
+    # print(f'Average IoU on Test Set: {avg_iou:.4f}')
+    # print(f'Average Precision on Test Set: {avg_precision:.4f}')
+    # print(f'Average Recall on Test Set: {avg_recall:.4f}')
+    # print(f'Average AUC on Test Set: {avg_auc_score:.4f}')
+
+    # calculate ver2
+    eps = 1e-7  # To prevent division by zero
+
+    avg_dice_2 = (2 * total_tp) / (2 * total_tp + total_fp + total_fn + eps)
+    avg_accuracy_2 = (total_tp + total_tn) / (total_tp + total_fp + total_fn + total_tn + eps)
+    avg_precision_2 = total_tp / (total_tp + total_fp + eps)
+    avg_recall_2 = total_tp / (total_tp + total_fn + eps)
+    avg_f1_score_2 = (2 * (avg_precision_2 * avg_recall_2)) / (avg_precision_2 + avg_recall_2 + eps)
+    avg_iou_2 = total_tp / (total_tp + total_fp + total_fn + eps)  
+    print('\n')
+    print(f'Average Dice Coefficient on Test Set: {avg_dice_2:.4f}')
+    print(f'Average Accuracy Coefficient on Test Set: {avg_accuracy_2:.4f}')
+    print(f'Average f1 Score Coefficient on Test Set: {avg_f1_score_2:.4f}')
+    print(f'Average IoU Coefficient on Test Set: {avg_iou_2:.4f}')
+    print(f'Average Precision Coefficient on Test Set: {avg_precision_2:.4f}')
+    print(f'Average Recall Coefficient on Test Set: {avg_recall_2:.4f}')
+
     #exit()
 
     num_samples = len(all_predictions)

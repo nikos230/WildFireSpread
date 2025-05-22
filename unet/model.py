@@ -3,7 +3,7 @@ import torch.nn as nn
 import numpy as np
 import torch.nn.functional as F
 
-#
+
 
 class UNet2D(nn.Module):
     def __init__(self, in_channels, out_channels, num_filters, kernel_size, pool_size, 
@@ -262,10 +262,12 @@ class ViTSegmentation2(nn.Module):
         self.decoder = nn.Sequential(
             # Reduce the number of channels
             nn.Conv2d(embed_dim, embed_dim // 2, kernel_size=5, stride=1, padding=2),
+            nn.BatchNorm2d(embed_dim // 2),
             nn.GELU(),
 
             # Upsample from 32x32 to 64x64
             nn.ConvTranspose2d(embed_dim // 2, embed_dim // 4, kernel_size=4, stride=2, padding=1),
+            nn.BatchNorm2d(embed_dim // 4),
             #nn.GELU(),
 
             # Final convolution to adjust output to num_classes
@@ -297,6 +299,7 @@ class ViTSegmentation2(nn.Module):
         # decoder patch size 1x1
         # self.decoder = nn.Sequential(
         #     nn.Conv2d(embed_dim, embed_dim // 2, kernel_size=7, stride=1, padding=3),
+        #     nn.BatchNorm2d(embed_dim // 2),
         #     #nn.LeakyReLU(negative_slope=1, inplace=True),
         #     nn.GELU(),
         #     #nn.ConvTranspose2d(embed_dim // 2, embed_dim // 4, kernel_size=2, stride=2, padding=0),  # Upsample by 2x

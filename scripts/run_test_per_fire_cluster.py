@@ -64,7 +64,7 @@ if __name__ == "__main__":
         with open(path_to_config, "w") as file:
             yaml.dump(dataset_config, file)
         print(f'Dataset Config Updated!, new fire sizes min:{min_size}, max:{max_size}')    
-        exit()
+        #exit()
         # run the test script and keep the results
         result = subprocess.run(
                                 ['python', 'test_unet3d.py'],

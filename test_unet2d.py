@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import DataLoader
 from utils.dataset_unet2d import BurnedAreaDataset
-from unet.model import UNet2D, UNet2D_struct
+from unet.model import UNet2D, UNet2D_struct, ViTSegmentation2
 from utils.utils import dice_coefficient, load_files, f1_score, accuracy, iou, recall, auroc, precision
 import glob
 import os
@@ -21,6 +21,7 @@ import pandas as pd
 from datetime import datetime
 from shapely.geometry import shape
 import shutil
+#from torchmetrics.classification import BinaryAccuracy, BinaryPrecision, BinaryRecall, BinaryF1Score, BinaryJaccardIndex
 
 
 def test(
@@ -61,12 +62,36 @@ def test(
     #     in_channels=input_channels,
     #     out_channels=output_channels, 
     #     )    
+
+
+    # in_channels = test_dataset[0][0].shape[0]         # 27-channel input
+    # num_classes = 1          # Binary segmentation
+    # image_size = 64          # Image resolution
+    # patch_size = 2           # Patch size
+    # embed_dim = 128     # Adjust embedding dimension for smaller input
+    # num_heads = 16            # Number of attention heads
+    # depth = 1             # Transformer depth
+    # mlp_dim = 256              # Feedforward dimension
+    # dropout_rate = 0.4
+
+    
+    # model = ViTSegmentation2(
+    #     in_channels=in_channels,
+    #     num_classes=num_classes,
+    #     image_size=image_size,
+    #     patch_size=patch_size,
+    #     embed_dim=embed_dim,
+    #     num_heads=num_heads,
+    #     depth=depth,
+    #     mlp_dim=mlp_dim,
+    #     dropout_rate=dropout_rate
+    # )
     
     model = torch.nn.DataParallel(model)
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     model.load_state_dict(torch.load(checkpoint_path, map_location=device))
-
+    
     model.to(device)
     model.eval()
 
@@ -77,9 +102,30 @@ def test(
     total_precision = 0
     total_recall = 0
 
+    total_tp = 0
+    total_fp = 0
+    total_tn = 0
+    total_fn = 0
+
     all_predictions = []
     all_ground_truths = []
     all_dice = []
+
+    # torch metrics stuff
+    # metric_kwargs = {"threshold": threshold}
+
+    # accuracy_metric = BinaryAccuracy(**metric_kwargs)
+    # precision_metric = BinaryPrecision(**metric_kwargs)
+    # recall_metric = BinaryRecall(**metric_kwargs)
+    # f1_metric = BinaryF1Score(**metric_kwargs)
+    # iou_metric = BinaryJaccardIndex(**metric_kwargs)
+    # #dice_metric = Dice(**metric_kwargs)
+
+    # # Move to device
+    # metrics = [accuracy_metric, precision_metric, recall_metric, f1_metric, iou_metric]
+    # for m in metrics:
+    #     m.to(device)
+
 
     with torch.no_grad():
         for idx, (inputs, targets) in enumerate(test_loader):
@@ -89,13 +135,16 @@ def test(
 
             outputs = model(inputs)
 
+            # update torch metrics
+            # for m in metrics:
+            #     m.update(outputs.squeeze(0).squeeze(0), targets.squeeze(0).squeeze(0))
+
             dice = dice_coefficient(outputs, targets, threshold=threshold).item()
             accuracy_ = accuracy(outputs, targets, threshold=threshold).item()
             f1_score_ = f1_score(outputs, targets, threshold=threshold).item()
             iou_ = iou(outputs, targets, threshold=threshold).item()
             precision_ = precision(outputs, targets, threshold=threshold).item()
             recall_ = recall(outputs, targets, threshold=threshold).item()
-
 
             total_dice += dice
             total_accuracy += accuracy_
@@ -119,20 +168,74 @@ def test(
             all_dice.append(dice)
 
 
+            # calcuate metrics for all test set
+            
+            # gather all tp, fp, tn, fn for each sample
+            tp = np.logical_and(binary_preds == 1, targets == 1).sum()
+            fp = np.logical_and(binary_preds == 1, targets == 0).sum()
+            tn = np.logical_and(binary_preds == 0, targets == 0).sum()
+            fn = np.logical_and(binary_preds == 0, targets == 1).sum()
 
+            # add to total
+            total_tp += tp
+            total_fp += fp
+            total_tn += tn
+            total_fn += fn
+
+
+
+
+
+    # arxikos tropos
     avg_dice = total_dice / len(test_loader)
     avg_accuracy = total_accuracy / len(test_loader)
     avg_f1_score = total_f1_score / len(test_loader)
     avg_iou = total_iou / len(test_loader)
     avg_precision = total_precision / len(test_loader)
-    avg_recall = total_recall / len(test_loader)    
+    avg_recall = total_recall / len(test_loader)  
 
-    print(f'Average Dice Coefficient on Test Set: {avg_dice:.4f}')
-    print(f'Average Accuracy Coefficient on Test Set: {avg_accuracy:.4f}')
-    print(f'Average f1 Score Coefficient on Test Set: {avg_f1_score:.4f}')
-    print(f'Average IoU Coefficient on Test Set: {avg_iou:.4f}')
-    print(f'Average Precision Coefficient on Test Set: {avg_precision:.4f}')
-    print(f'Average Recall Coefficient on Test Set: {avg_recall:.4f}')
+    # print(f'Average Dice Coefficient on Test Set: {avg_dice:.4f}')
+    # print(f'Average Accuracy Coefficient on Test Set: {avg_accuracy:.4f}')
+    # print(f'Average f1 Score Coefficient on Test Set: {avg_f1_score:.4f}')
+    # print(f'Average IoU Coefficient on Test Set: {avg_iou:.4f}')
+    # print(f'Average Precision Coefficient on Test Set: {avg_precision:.4f}')
+    # print(f'Average Recall Coefficient on Test Set: {avg_recall:.4f}')
+
+    # calculate ver2
+    eps = 1e-7  # To prevent division by zero
+
+    avg_dice_2 = (2 * total_tp) / (2 * total_tp + total_fp + total_fn + eps)
+    avg_accuracy_2 = (total_tp + total_tn) / (total_tp + total_fp + total_fn + total_tn + eps)
+    avg_precision_2 = total_tp / (total_tp + total_fp + eps)
+    avg_recall_2 = total_tp / (total_tp + total_fn + eps)
+    avg_f1_score_2 = (2 * (avg_precision_2 * avg_recall_2)) / (avg_precision_2 + avg_recall_2 + eps)
+    avg_iou_2 = total_tp / (total_tp + total_fp + total_fn + eps)  
+    print('\n')
+    print(f'Average Dice Coefficient on Test Set: {avg_dice_2:.4f}')
+    print(f'Average Accuracy Coefficient on Test Set: {avg_accuracy_2:.4f}')
+    print(f'Average f1 Score Coefficient on Test Set: {avg_f1_score_2:.4f}')
+    print(f'Average IoU Coefficient on Test Set: {avg_iou_2:.4f}')
+    print(f'Average Precision Coefficient on Test Set: {avg_precision_2:.4f}')
+    print(f'Average Recall Coefficient on Test Set: {avg_recall_2:.4f}')
+
+
+    # torch metrics
+    # avg_accuracy_3 = accuracy_metric.compute().item()
+    # avg_precision_3 = precision_metric.compute().item()
+    # avg_recall_3 = recall_metric.compute().item()
+    # avg_f1_3 = f1_metric.compute().item()
+    # avg_iou_3 = iou_metric.compute().item()
+    # #avg_dice_3 = dice_metric.compute().item()
+
+    # print('\n')
+    # #print(f'Average Dice Coefficient on Test Set: {avg_accuracy_3:.4f}')
+    # print(f'Average Accuracy on Test Set: {avg_accuracy_3:.4f}')
+    # print(f'Average F1 Score on Test Set: {avg_f1_3:.4f}')
+    # print(f'Average IoU on Test Set: {avg_iou_3:.4f}')
+    # print(f'Average Precision on Test Set: {avg_precision_3:.4f}')
+    # print(f'Average Recall on Test Set: {avg_recall_3:.4f}')
+
+
     #exit()
 
     # plot all predictions, ground truths, and the overlap
