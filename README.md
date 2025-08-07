@@ -68,7 +68,7 @@ The main evaluation metric is the Dice Coefficient, presented below, which shows
 A baseline UNet2D is trained on only the fire day and then with all samples meaning using all 10 days each sample has. 
 
 
-| Metrics (%)         | UNet2D<br /> Baseline (1 day) | UNet2D<br /> 10days  | UNet3D <br /> 10days  | ViT <br /> 10days  | ConvLSTM <br /r> 10days       
+| Metrics (%)         | UNet2D<br /> Baseline (1 day) | UNet2D<br /> 10days  | UNet3D <br /> 10days  | ViT <br /> 10days  | ConvLSTM <br /> 10days       
 |:------------------:|:------------------------------:|:--------------------:|:---------------------:|:------------------:|:-----------------------:|
 | F1 Score / Dice    | 48.3                           | 51.7                 | **53.6**              | 43.7               | 52.7   
 | IoU                | 31.9                           | 34.8                 | **36.6**              | 28.0               | 35.7
