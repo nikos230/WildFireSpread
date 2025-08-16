@@ -63,7 +63,7 @@ This project makes use of UNet2D and UNet3D models, the main difference in UNet3
 In Feature work the Dataset will be tested on a Vision Transformer (ViT) and results will be published. <br /><br />
 <br />
 
-## Models Evaluation and Metrics (latest results Feb 2025)
+## Models Evaluation and Metrics (latest results Aug 2025)
 The main evaluation metric is the Dice Coefficient, presented below, which shows how much 2 shapes are similar, in this Segmatation Task along with Intersection Over Union (IoU) are the most important metrics.
 A baseline UNet2D is trained on only the fire day and then with all samples meaning using all 10 days each sample has. 
 
