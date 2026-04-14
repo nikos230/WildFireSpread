@@ -4,7 +4,7 @@
 <br /> 
 
 <p align="center">
-  <a href="https://arxiv.org/abs/2505.17556" target="_blank"><img alt="IEEEAccess Paper" src="https://img.shields.io/badge/IEEE𝘈𝘤𝘤𝘦𝘴𝘴 Paper-View|Download-ff0066" /></a>
+  <a href="https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=11471730" target="_blank"><img alt="IEEEAccess Paper" src="https://img.shields.io/badge/IEEE𝘈𝘤𝘤𝘦𝘴𝘴 Paper-View|Download-ff0066" /></a>
   <a href="https://drive.google.com/file/d/1OH1J6DBbaEdkq_9TLkmgOfE8chgCV4Q3/view?usp=sharing" target="_blank"><img alt="Thesis" src="https://img.shields.io/badge/Thesis%20PDF-View|Download-ff0066" /></a>
   <a href="https://docs.google.com/presentation/d/1-5LgLbFKWD3iwZYHzvF0SuC5bpvfoiuH/edit?usp=sharing&ouid=112384600523392747074&rtpof=true&sd=true" target="_blank"><img alt="Thesis Presentation" src="https://img.shields.io/badge/Thesis%20Presentation-View|Download-ff0066" /></a>
 </p>
