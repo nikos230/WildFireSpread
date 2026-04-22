@@ -182,7 +182,6 @@ If you do not train the models you can use the saved checkpoints from my work. Y
   year={2026},
   publisher={IEEE}
 }
-
 ```
 
 ## Contact
