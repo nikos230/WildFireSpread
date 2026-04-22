@@ -34,7 +34,7 @@ This project is part of my Thesis and makes use of [mesogeos](https://github.com
 - [About the Project](#about-the-project)
   - [Dataset](#dataset)
   - [Deep Learning Models](#deep-learning-models)
-  - [Models Evaluation and Metrics (latest results Feb 2025)](#models-evaluation-and-metrics-latest-results-feb-2025)
+  - [Models Evaluation and Metrics](#models-evaluation-and-metrics)
   - [Visualiasion of Test Results](#visualiasion-of-test-results)
   - [Download Best Models and Dataset](#download-best-models-and-dataset)
 - [Getting Started](#getting-started)
@@ -44,10 +44,10 @@ This project is part of my Thesis and makes use of [mesogeos](https://github.com
       - [Train UNet2D](#train-unet2d)
       - [Train UNet3D](#train-unet3d)
       - [Train UNet2D Baseline](#train-unet2d-baseline)
-  - [Tesing the pre-trained Models](#tesing-the-pre-trained-models)
+  - [Tesing the pre-trained Models](#testing-the-pre-trained-models)
  - [Contributing / Contact](#contact)
  - [Variables, Spatial and Temporal Resolution and Sources](#dataset-variables-spatial-resolution-and-sources)
-
+ - [Citation](#citation)
 
 
 ## Dataset
@@ -63,7 +63,7 @@ This project makes use of UNet2D and UNet3D models, the main difference in UNet3
 In Feature work the Dataset will be tested on a Vision Transformer (ViT) and results will be published. <br /><br />
 <br />
 
-## Models Evaluation and Metrics (latest results Aug 2025)
+## Models Evaluation and Metrics
 The main evaluation metric is the Dice Coefficient, presented below, which shows how much 2 shapes are similar, in this Segmatation Task along with Intersection Over Union (IoU) are the most important metrics.
 A baseline UNet2D is trained on only the fire day and then with all samples meaning using all 10 days each sample has. 
 
@@ -171,6 +171,19 @@ If you do not train the models you can use the saved checkpoints from my work. Y
 - For UNet3D, download the best model from this [link](https://mega.nz/folder/8O5RDBZQ#y3olJJq7_4IksUF5zDcV2g) and go to `configs/train_test_unet3d.yaml` and specify path to checkpoint in `checkpoint_path:` variable, then Run test_unet3d.py
 - For UNet2D, download the best model from this [link](https://mega.nz/folder/MOJlnADD#0KJSwgMoBSEN-TOGZTSyPw) and go to `configs/train_test_unet2d.yaml` and specify path to checkpoint in `checkpoint_path:` variable, then Run test_unet2d.py
 
+## Citation
+```
+@article{anastasiou2026wildfire,
+  title={Wildfire spread forecasting with Deep Learning},
+  author={Anastasiou, Nikolaos and Kondylatos, Spyros and Papoutsis, Ioannis},
+  journal={IEEE Access},
+  volume={14},
+  pages={51361--51373},
+  year={2026},
+  publisher={IEEE}
+}
+
+```
 
 ## Contact
 For more info contact : nikolas619065@gmail.com <br /><br />
